@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>API_Template</name>
+    </assembly>
+    <members>
+        <member name="M:API_Template.Controllers.LoginController.Post(LiteOn.WebAPI.Auth.LogonRequest)">
+            <summary>
+            驗證UserName、UserPassword、AppID
+            </summary>
+            <param name="loginRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.LoginController.PostPlus(LiteOn.WebAPI.Auth.LogonPlusRequest)">
+            <summary>
+            增加第四個參數Time，可設定秒數(token的時效)
+            </summary>
+            <param name="vRequest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.GetHCController.GetHC_QueryLvData(API.Model.GetHC_Input)">
+            <summary>
+            QueryLvData
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.GetHCController.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+            <summary>
+            QueryDLBuffer
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartWaterController.GetWaterReal(API.Model.SmartWaterReal_Input)">
+            <summary>
+            抓取當天實時用水量 By did and functiontype
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartWaterController.GetWaterDay(API.Model.SmartWaterDay_Input)">
+            <summary>
+            抓取每天的用水量（當天抓取昨日的用水量） By did 
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterKWHReal(API.Model.SmartMeterKWH_Input)">
+            <summary>
+            抓取當天實時用電量 By did and functiontype
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterKWHDay(API.Model.SmartMeterKWH_Input)">
+            <summary>
+            抓取每天的用電量 By did 
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterUTS(API.Model.SmartMeterUTS_Input)">
+            <summary>
+            抓取每天UTS By PRODUCTLINECODE
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.TestServicesController.getHello(API_Template.Controllers.TestServicesController.TestInput)">
+            <summary>
+            測試API服務是否運作中
+            </summary>
+            <param name="item">AppID=應用程式ID、Name=要顯示的訊息名稱、Num=要回傳的訊息次數
+            </param>
+            <remarks>
+            測試API服務是否運作中，傳入AppID、Name、Num參數<br />
+            若API有在服務中，將傳回Num指定次數的 Hello World 訊息
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.TestServicesController.getHello2(API_Template.Controllers.TestServicesController.TestInput)">
+            <summary>
+            測試API服務是否運作中
+            </summary>
+            <param name="item">AppID=應用程式ID、Name=要顯示的訊息名稱、Num=要回傳的訊息次數
+            </param>
+            <remarks>
+            測試API服務是否運作中，傳入AppID、Name、Num參數<br />
+            若API有在服務中，將傳回Num指定次數的 Hello World 訊息
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="T:API.Model.ReturnMessage">
+            <summary>
+            服务端向客户端返回信息类
+            </summary>
+        </member>
+        <member name="P:API.Model.ReturnMessage.Success">
+            <summary>
+            请求状态
+            </summary>
+        </member>
+        <member name="P:API.Model.ReturnMessage.TypeID">
+            <summary>
+            信息类型
+            </summary>
+        </member>
+        <member name="P:API.Model.ReturnMessage.Info">
+            <summary>
+            提示信息
+            </summary>
+        </member>
+        <member name="P:API.Model.ReturnMessage.Redirect">
+            <summary>
+            重转地址
+            </summary>
+        </member>
+        <member name="P:API.Model.ReturnMessage.Data">
+            <summary>
+            数据集
+            </summary>
+        </member>
+        <member name="T:API.Model.GetHC_Helper">
+            <summary>
+            Get HC CRUD
+            </summary>
+        </member>
+        <member name="M:API.Model.GetHC_Helper.GetHC_QueryLvData(API.Model.GetHC_Input)">
+            <summary>
+            QueryLvData
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetHC_Helper.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+            <summary>
+            QueryDLBuffer
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="T:API.Model.GetWater_Helper">
+            <summary>
+            智能水錶 CRUD
+            </summary>
+        </member>
+        <member name="M:API.Model.GetWater_Helper.GetWaterReal(API.Model.SmartWaterReal_Input)">
+            <summary>
+            智能水錶 抓取每天實時的用水量 (每小時更新) normal:正常  abnormal:異常
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetWater_Helper.GetWaterDay(API.Model.SmartWaterDay_Input)">
+            <summary>
+            智能水錶抓取每天的總用水量（當天抓取昨日整天的總用水量）
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetWater_Helper.GetLimitReal">
+            <summary>
+            抓取實時用水量的上限值 
+            </summary>
+            <param name="did"></param>
+            <returns>return int</returns>
+        </member>
+        <member name="M:API.Model.GetWater_Helper.GetLimitDay">
+            <summary>
+            抓取每天用水量的上限值 
+            </summary>
+            <param name="did"></param>
+            <returns>return int</returns>
+        </member>
+        <member name="T:API.Model.GetMeter_Helper">
+            <summary>
+            智能電錶 CRUD
+            </summary>
+        </member>
+        <member name="M:API.Model.GetMeter_Helper.GetMeterKWHReal(API.Model.SmartMeterKWH_Input)">
+            <summary>
+            智能電錶抓取當天實時用電量異常的數據和正常的數據（type=normal --- 正常數據 ; type = abnormal --- 超過上限值的數據）
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetMeter_Helper.GetMeterKWHDay(API.Model.SmartMeterKWH_Input)">
+            <summary>
+            智能電錶抓取總用電量 當天抓取昨日一天的總用電量
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetMeter_Helper.GetMeterUTS(API.Model.SmartMeterUTS_Input)">
+            <summary>
+            智能電錶抓取昨日一天的UTS數據 上午9:20左右 MES會把數據拋到DB中
+            </summary>
+            <param name="Parameter"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Model.GetMeter_Helper.GetLimitReal(System.String)">
+            <summary>
+            根據did抓取實時用電量的上限值 每個did對應的上限值不同
+            </summary>
+            <param name="did"></param>
+            <returns>return int</returns>
+        </member>
+        <member name="M:API.Model.GetMeter_Helper.GetLimitDay(System.String)">
+            <summary>
+            根據did抓取每天用電量的上限值 每個did對應的上限值不同
+            </summary>
+            <param name="did"></param>
+            <returns>return int</returns>
+        </member>
+    </members>
+</doc>

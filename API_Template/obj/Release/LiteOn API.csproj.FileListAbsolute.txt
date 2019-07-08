@@ -1,0 +1,22 @@
+D:\桌面\webapi-master\API_Template\bin\ApplicationInsights.config
+D:\桌面\webapi-master\API_Template\bin\roslyn\csc.exe
+D:\桌面\webapi-master\API_Template\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\桌面\webapi-master\API_Template\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\桌面\webapi-master\API_Template\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\桌面\webapi-master\API_Template\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\桌面\webapi-master\API_Template\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\桌面\webapi-master\API_Template\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\桌面\webapi-master\API_Template\bin\roslyn\System.Collections.Immutable.dll
+D:\桌面\webapi-master\API_Template\bin\roslyn\System.Reflection.Metadata.dll
+D:\桌面\webapi-master\API_Template\bin\roslyn\vbc.exe
+D:\桌面\webapi-master\API_Template\bin\roslyn\VBCSCompiler.exe
+D:\桌面\webapi-master\API_Template\bin\roslyn\VBCSCompiler.exe.config
+D:\桌面\webapi-master\API_Template\bin\API_Template.dll.config
+D:\桌面\webapi-master\API_Template\bin\API_Template.XML
+D:\桌面\webapi-master\API_Template\bin\API_Template.dll
+D:\桌面\webapi-master\API_Template\bin\API_Template.pdb
+D:\桌面\webapi-master\API_Template\obj\Release\API_Template.dll
+D:\桌面\webapi-master\API_Template\obj\Release\API_Template.pdb
+D:\桌面\webapi-master\API_Template\bin\Microsoft.ApplicationInsights.dll
+D:\桌面\webapi-master\API_Template\bin\Microsoft.ApplicationInsights.xml
+D:\桌面\webapi-master\API_Template\obj\Release\LiteOn API.csprojResolveAssemblyReference.cache
