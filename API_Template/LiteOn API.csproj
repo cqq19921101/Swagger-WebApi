@@ -317,7 +317,7 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\LoginController.cs" />
-    <Compile Include="Controllers\GetHCController.cs" />
+    <Compile Include="Controllers\FactoryManagementController.cs" />
     <Compile Include="Controllers\SmartWaterController.cs" />
     <Compile Include="Controllers\SmartMeterController.cs" />
     <Compile Include="Filter\AuthFilter.cs" />
@@ -327,7 +327,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="App_Data\ReturnMessage.cs" />
-    <Compile Include="Model\GetHC.cs" />
+    <Compile Include="Model\FactoryManagement.cs" />
     <Compile Include="Model\SmartWater.cs" />
     <Compile Include="Model\SmartMeter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

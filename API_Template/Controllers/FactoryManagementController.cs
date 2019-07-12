@@ -16,12 +16,12 @@ using System.Web;
 
 namespace API_Template.Controllers
 {
-    public class GetHCController : ApiController
+    public class FactoryManagementController : ApiController
     {
         private readonly log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LoginController));
         ArrayList opc = new ArrayList();
 
-        public GetHCController()
+        public FactoryManagementController()
         {
         }
 
@@ -87,11 +87,71 @@ namespace API_Template.Controllers
 
         #endregion
 
+        #region GetNSB
+        /// <summary>
+        /// GetNSB
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [SwaggerRequestExample(typeof(GetNSB_Input), typeof(GetNSB_InputExample))]
+        [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetNSB_OutputExample))]
+        public ReturnMessage GetNSB(GetNSB_Input item)
+        {
+            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+            string Result = "";
+            try
+            {
+                Result = GetNSB_Helper.GetNSB(item);
+                rm.Success = true;
+                rm.Info = Result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Got error. " + ex.Message);
+                rm.Success = false;
+                rm.Info = "Error";
+            }
+
+            return rm;
+        }
+        #endregion
+
+        #region GetNUB
+        /// <summary>
+        /// GetNUB
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [SwaggerRequestExample(typeof(GetNUB_Input), typeof(GetNUB_InputExample))]
+        [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetNUB_OutputExample))]
+        public ReturnMessage GetNUB(GetNUB_Input item)
+        {
+            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+            string Result = "";
+            try
+            {
+                Result = GetNUB_Helper.GetNUB(item);
+                rm.Success = true;
+                rm.Info = Result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Got error. " + ex.Message);
+                rm.Success = false;
+                rm.Info = "Error";
+            }
+
+            return rm;
+        }
+        #endregion
+
 
     }
 
 
-    #region Example 
+    #region GetHC Example 
     public class InputExample : IExamplesProvider
     {
         public object GetExamples()
@@ -129,7 +189,6 @@ namespace API_Template.Controllers
 
         }
     }
-
     public class OutputExampleLvData : IExamplesProvider
     {
         public object GetExamples()
@@ -184,5 +243,58 @@ namespace API_Template.Controllers
 
     #endregion
 
+    #region GetNSB Example 
+    public class GetNSB_InputExample : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new GetNUB_Input
+            {
+                SPMON = "2019",
+                PRODH = "10060"
+            };
+        }
+
+    }
+    public class GetNSB_OutputExample : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new GetNSB_Output
+            {
+                NETWR = "10000",
+            };
+
+        }
+    }
+
+    #endregion
+
+    #region GetNUB Example 
+    public class GetNUB_InputExample : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new GetNUB_Input
+            {
+                SPMON = "2019",
+                PRODH = "10060"
+            };
+        }
+
+    }
+    public class GetNUB_OutputExample : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new GetNUB_Output
+            {
+                FKIMG = "10000",
+            };
+
+        }
+    }
+
+    #endregion
 }
 

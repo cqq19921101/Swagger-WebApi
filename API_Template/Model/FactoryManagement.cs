@@ -13,7 +13,10 @@ using Newtonsoft.Json;
 namespace API.Model
 {
 
-    #region 參數實例化
+    #region GetHC_QueryLvData & GetHC_QueryDLBuffer
+
+
+    #region 參數實例化 --- GetHC
     public class GetHC_Input
     {
         public string BU { get; set; }//BU
@@ -86,15 +89,13 @@ namespace API.Model
     }
     #endregion
 
-
-
     /// <summary>
     /// Get HC CRUD
     /// </summary>
     public class GetHC_Helper
     {
         static string conn = ConfigurationManager.AppSettings["HRReportDBConnection"];
-        static  SqlDB sdb = new SqlDB(conn);
+        static SqlDB sdb = new SqlDB(conn);
         static ArrayList opc = new ArrayList();
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace API.Model
             opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
             opc.Add(DataPara.CreateProcParameter("@P_ID_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
             DataTable dt = sdb.RunProc2("P_DailyReprot_QueryLvData", opc);
-            
+
             return JsonConvert.SerializeObject(dt);
 
         }
@@ -130,4 +131,97 @@ namespace API.Model
 
 
     }
+    #endregion
+
+    #region GetNSB 
+
+    #region 參數實例化 --- GetNSB
+    public class GetNSB_Input
+    {
+        public string SPMON { get; set; }//日期
+        public string PRODH { get; set; }//車間編號
+
+    }
+    public class GetNSB_Output
+    {
+        public string NETWR { get; set; }//NETWR
+    }
+
+    #endregion
+
+
+    /// <summary>
+    /// GetNSB CRUD
+    /// </summary>
+    public class GetNSB_Helper
+    {
+        static string conn = ConfigurationManager.AppSettings["SAPDBConnection"];
+        static SqlDB sdb = new SqlDB(conn);
+        static ArrayList opc = new ArrayList();
+
+        /// <summary>
+        /// GetNSB
+        /// </summary>
+        /// <param name="Parameter"></param>
+        /// <returns>Datatable 轉 Json</returns>
+        public static string GetNSB(GetNSB_Input Parameter)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(@"SELECT Sum(NETWR) as NETWR
+                        FROM [SAPTEST].[dbo].[ZTVDSS913]
+                        where substring(SPMON,1,4) = @SPMON and PRODH = @PRODH ");
+            opc.Clear();
+            opc.Add(DataPara.CreateDataParameter("@SPMON", SqlDbType.NVarChar, Parameter.SPMON));
+            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+            string NETWR = sdb.GetRowString(sb.ToString(),opc, "NETWR");
+            return JsonConvert.SerializeObject(NETWR);
+
+        }
+    }
+
+
+    #endregion
+
+    #region GetNUB
+    #region 參數實例化 --- GetNUB
+    public class GetNUB_Input
+    {
+        public string SPMON { get; set; }//日期
+        public string PRODH { get; set; }//車間編號
+
+    }
+    public class GetNUB_Output
+    {
+        public string FKIMG { get; set; }//NUB 單位是台幣
+    }
+
+    #endregion
+
+    public class GetNUB_Helper
+    {
+        static string conn = ConfigurationManager.AppSettings["SAPDBConnection"];
+        static SqlDB sdb = new SqlDB(conn);
+        static ArrayList opc = new ArrayList();
+
+        /// <summary>
+        /// GetNUB
+        /// </summary>
+        /// <param name="Parameter"></param>
+        /// <returns>string 轉 Json</returns>
+        public static string GetNUB(GetNUB_Input Parameter)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(@"SELECT Sum(FKIMG) as FKIMG
+                        FROM [SAPTEST].[dbo].[ZTVDSS913]
+                        where substring(SPMON,1,4) = @SPMON and PRODH = @PRODH ");
+            opc.Clear();
+            opc.Add(DataPara.CreateDataParameter("@SPMON", SqlDbType.NVarChar, Parameter.SPMON));
+            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+            string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
+            return JsonConvert.SerializeObject(FKIMG);
+
+        }
+    }
+    #endregion
+
 }

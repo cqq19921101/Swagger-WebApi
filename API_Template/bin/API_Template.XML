@@ -18,16 +18,30 @@
             <param name="vRequest"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.GetHCController.GetHC_QueryLvData(API.Model.GetHC_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetHC_QueryLvData(API.Model.GetHC_Input)">
             <summary>
             QueryLvData
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.GetHCController.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
             <summary>
             QueryDLBuffer
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetNSB(API.Model.GetNSB_Input)">
+            <summary>
+            GetNSB
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetNUB(API.Model.GetNUB_Input)">
+            <summary>
+            GetNUB
             </summary>
             <param name="item"></param>
             <returns></returns>
@@ -139,6 +153,25 @@
             </summary>
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="T:API.Model.GetNSB_Helper">
+            <summary>
+            GetNSB CRUD
+            </summary>
+        </member>
+        <member name="M:API.Model.GetNSB_Helper.GetNSB(API.Model.GetNSB_Input)">
+            <summary>
+            GetNSB
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetNUB_Helper.GetNUB(API.Model.GetNUB_Input)">
+            <summary>
+            GetNUB
+            </summary>
+            <param name="Parameter"></param>
+            <returns>string 轉 Json</returns>
         </member>
         <member name="T:API.Model.GetWater_Helper">
             <summary>
