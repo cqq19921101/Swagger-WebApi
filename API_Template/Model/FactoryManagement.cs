@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Text;
 using System.Collections;
 using Newtonsoft.Json;
+using System.Web.Script.Serialization;
 
 namespace API.Model
 {
@@ -155,6 +156,9 @@ namespace API.Model
     /// </summary>
     public class GetNSB_Helper
     {
+        public static List<string> m = new List<string>();
+        public static JavaScriptSerializer jss = new JavaScriptSerializer();
+
         static string conn = ConfigurationManager.AppSettings["SAPDBConnection"];
         static SqlDB sdb = new SqlDB(conn);
         static ArrayList opc = new ArrayList();
@@ -174,7 +178,8 @@ namespace API.Model
             opc.Add(DataPara.CreateDataParameter("@SPMON", SqlDbType.NVarChar, Parameter.SPMON));
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
             string NETWR = sdb.GetRowString(sb.ToString(),opc, "NETWR");
-            return JsonConvert.SerializeObject(NETWR);
+            m.Add(NETWR);
+            return jss.Serialize(m); 
 
         }
     }
@@ -199,6 +204,9 @@ namespace API.Model
 
     public class GetNUB_Helper
     {
+        public static List<string> m = new List<string>();
+        public static JavaScriptSerializer jss = new JavaScriptSerializer();
+
         static string conn = ConfigurationManager.AppSettings["SAPDBConnection"];
         static SqlDB sdb = new SqlDB(conn);
         static ArrayList opc = new ArrayList();
@@ -218,7 +226,8 @@ namespace API.Model
             opc.Add(DataPara.CreateDataParameter("@SPMON", SqlDbType.NVarChar, Parameter.SPMON));
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
             string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
-            return JsonConvert.SerializeObject(FKIMG);
+            m.Add(FKIMG);
+            return jss.Serialize(FKIMG);
 
         }
     }
