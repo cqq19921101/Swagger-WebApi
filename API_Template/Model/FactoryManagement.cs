@@ -18,6 +18,14 @@ namespace API.Model
 
 
     #region 參數實例化 --- GetHC
+
+    public class GetHCDLBuffer_Input
+    {
+        public string BU { get; set; }//BU
+        public string DEPT_ID { get; set; }//DEPT_ID
+
+    }
+
     public class GetHC_Input
     {
         public string BU { get; set; }//BU
@@ -25,21 +33,8 @@ namespace API.Model
     }
     public class GetHCDLBuffer_Output
     {
-        public string ORG { get; set; }
-        public string DEPT_ID { get; set; }
-        public string SUB_DEPT { get; set; }
         public string DL_DEMAND { get; set; }
         public string DL_ACT { get; set; }
-        public string IDL_ACT { get; set; }
-        public string TTL_HC { get; set; }
-        public string DL_CUM_NEW_HIRE { get; set; }
-        public string DL_BUFFER { get; set; }
-        public string G1_RATE { get; set; }
-        public string G2_RATE { get; set; }
-        public string G3_RATE { get; set; }
-        public string G4_RATE { get; set; }
-        public string G5_RATE { get; set; }
-        public string rowNumber { get; set; }
     }
 
 
@@ -120,12 +115,13 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetHC_QueryDLBuffer(GetHC_Input Parameter)
+        public static string GetHC_QueryDLBuffer(GetHCDLBuffer_Input Parameter)
         {
             string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
             opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
             opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
-            DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer", opc);
+            opc.Add(DataPara.CreateProcParameter("@P_DEPTID", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.DEPT_ID));
+            DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer_API", opc);
             return JsonConvert.SerializeObject(dt);
 
         }
@@ -139,8 +135,9 @@ namespace API.Model
     #region 參數實例化 --- GetNSB
     public class GetNSB_Input
     {
-        public string SPMON { get; set; }//日期
+        public string WERKS { get; set; }//廠別
         public string PRODH { get; set; }//車間編號
+        public string OPTIONAL { get; set; }
 
     }
     public class GetNSB_Output
@@ -173,13 +170,13 @@ namespace API.Model
             StringBuilder sb = new StringBuilder();
             sb.Append(@"SELECT Sum(NETWR) as NETWR
                         FROM [SAPTEST].[dbo].[ZTVDSS913]
-                        where substring(SPMON,1,4) = @SPMON and PRODH = @PRODH ");
+                        where substring(SPMON,1,4) = year(getdate()) and PRODH = @PRODH and WERKS = @WERKS");
             opc.Clear();
-            opc.Add(DataPara.CreateDataParameter("@SPMON", SqlDbType.NVarChar, Parameter.SPMON));
+            opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-            string NETWR = sdb.GetRowString(sb.ToString(),opc, "NETWR");
+            string NETWR = sdb.GetRowString(sb.ToString(), opc, "NETWR");
             m.Add(NETWR);
-            return jss.Serialize(m); 
+            return jss.Serialize(m);
 
         }
     }
@@ -191,8 +188,9 @@ namespace API.Model
     #region 參數實例化 --- GetNUB
     public class GetNUB_Input
     {
-        public string SPMON { get; set; }//日期
+        public string WERKS { get; set; }//廠別
         public string PRODH { get; set; }//車間編號
+        public string OPTIONAL { get; set; }
 
     }
     public class GetNUB_Output
@@ -221,9 +219,9 @@ namespace API.Model
             StringBuilder sb = new StringBuilder();
             sb.Append(@"SELECT Sum(FKIMG) as FKIMG
                         FROM [SAPTEST].[dbo].[ZTVDSS913]
-                        where substring(SPMON,1,4) = @SPMON and PRODH = @PRODH ");
+                        where substring(SPMON,1,4) = year(getdate()) and PRODH = @PRODH and WERKS = @WERKS");
             opc.Clear();
-            opc.Add(DataPara.CreateDataParameter("@SPMON", SqlDbType.NVarChar, Parameter.SPMON));
+            opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
             string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
             m.Add(FKIMG);

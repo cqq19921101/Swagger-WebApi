@@ -25,7 +25,7 @@
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.FactoryManagementController.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetHC_QueryDLBuffer(API.Model.GetHCDLBuffer_Input)">
             <summary>
             QueryDLBuffer
             </summary>
@@ -147,7 +147,7 @@
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
         </member>
-        <member name="M:API.Model.GetHC_Helper.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+        <member name="M:API.Model.GetHC_Helper.GetHC_QueryDLBuffer(API.Model.GetHCDLBuffer_Input)">
             <summary>
             QueryDLBuffer
             </summary>

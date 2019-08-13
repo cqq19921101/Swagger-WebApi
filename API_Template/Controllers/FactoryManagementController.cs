@@ -13,6 +13,7 @@ using System.Data;
 using System.Text;
 using System.Collections;
 using System.Web;
+using System.Web.Script.Serialization;
 
 namespace API_Template.Controllers
 {
@@ -62,9 +63,9 @@ namespace API_Template.Controllers
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPost]
-        [SwaggerRequestExample(typeof(GetHC_Input), typeof(InputExample))]
+        [SwaggerRequestExample(typeof(GetHCDLBuffer_Input), typeof(InputExampleDLBuffer))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleDLBuffer))]
-        public ReturnMessage GetHC_QueryDLBuffer(GetHC_Input item)
+        public ReturnMessage GetHC_QueryDLBuffer(GetHCDLBuffer_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
             string Result = "";
@@ -99,7 +100,7 @@ namespace API_Template.Controllers
         public ReturnMessage GetNSB(GetNSB_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
+            string Result = string.Empty;
             try
             {
                 Result = GetNSB_Helper.GetNSB(item);
@@ -152,6 +153,32 @@ namespace API_Template.Controllers
 
 
     #region GetHC Example 
+    public class InputExampleDLBuffer : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new GetHCDLBuffer_Input
+            {
+                BU = "OPTO",
+                DEPT_ID = "SSD"
+            };
+        }
+
+    }
+
+
+    public class OutputExampleDLBuffer : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new GetHCDLBuffer_Output
+            {
+                DL_DEMAND = "200",
+                DL_ACT = "143",
+            };
+
+        }
+    }
     public class InputExample : IExamplesProvider
     {
         public object GetExamples()
@@ -163,32 +190,7 @@ namespace API_Template.Controllers
         }
 
     }
-    public class OutputExampleDLBuffer : IExamplesProvider
-    {
-        public object GetExamples()
-        {
-            return new GetHCDLBuffer_Output
-            {
-                ORG = "PLANT",
-                DEPT_ID = "SSD",
-                SUB_DEPT = "SSD_IRPTR",
-                DL_DEMAND = "138",
-                DL_ACT = "143",
-                IDL_ACT = "6",
-                TTL_HC = "149",
-                DL_CUM_NEW_HIRE = "9",
-                DL_BUFFER = "3.62319%",
-                G1_RATE = "28.67%",
-                G2_RATE = "20.98%",
-                G3_RATE = "44.06%",
-                G4_RATE = "4.2%",
-                G5_RATE = "2.1%",
-                rowNumber = "1",
 
-            };
-
-        }
-    }
     public class OutputExampleLvData : IExamplesProvider
     {
         public object GetExamples()
@@ -250,8 +252,9 @@ namespace API_Template.Controllers
         {
             return new GetNUB_Input
             {
-                SPMON = "2019",
-                PRODH = "10060"
+                WERKS = "2301",
+                PRODH = "10060",
+                OPTIONAL = "",
             };
         }
 
@@ -277,8 +280,9 @@ namespace API_Template.Controllers
         {
             return new GetNUB_Input
             {
-                SPMON = "2019",
-                PRODH = "10060"
+                WERKS = "2301",
+                PRODH = "10060",
+                OPTIONAL = ""
             };
         }
 
