@@ -225,7 +225,7 @@ namespace API.Model
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
             string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
             m.Add(FKIMG);
-            return jss.Serialize(FKIMG);
+            return jss.Serialize(m);
 
         }
     }
