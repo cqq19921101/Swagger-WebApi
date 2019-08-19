@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace API.Model
 {
@@ -15,7 +16,8 @@ namespace API.Model
     {
         private bool _Success = false;
         private int _TypeID = 0;
-        private string _Info = "";
+        private string _Info = null;
+        private JArray _Array = null;
         private string _Redirect = "";
         private List<object> _Data = null;
 
@@ -46,6 +48,7 @@ namespace API.Model
             get { return _Info; }
             set { _Info = value; }
         }
+
         /// <summary>
         /// 重转地址
         /// </summary>
@@ -64,5 +67,16 @@ namespace API.Model
             get { return _Data; }
             set { _Data = value; }
         }
+
+        /// <summary>
+        /// JArray
+        /// </summary>
+        [DataMember]
+        public JArray Array
+        {
+            get { return _Array; }
+            set { _Array = value; }
+        }
+
     }
 }

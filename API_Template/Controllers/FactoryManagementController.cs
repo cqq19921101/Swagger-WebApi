@@ -14,6 +14,7 @@ using System.Text;
 using System.Collections;
 using System.Web;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace API_Template.Controllers
 {
@@ -72,8 +73,10 @@ namespace API_Template.Controllers
             try
             {
                 Result = GetHC_Helper.GetHC_QueryDLBuffer(item);
+                JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Info = "Success";
+                rm.Array = jArray;
             }
             catch (Exception ex)
             {
@@ -104,8 +107,10 @@ namespace API_Template.Controllers
             try
             {
                 Result = GetNSB_Helper.GetNSB(item);
+                JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Info = "Success";
+                rm.Array = jArray;
             }
             catch (Exception ex)
             {
@@ -113,6 +118,7 @@ namespace API_Template.Controllers
                 rm.Success = false;
                 rm.Info = "Error";
             }
+
 
             return rm;
         }
@@ -130,12 +136,14 @@ namespace API_Template.Controllers
         public ReturnMessage GetNUB(GetNUB_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
+            string Result = string.Empty;
             try
             {
                 Result = GetNUB_Helper.GetNUB(item);
+                JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Info = "Success";
+                rm.Array = jArray;
             }
             catch (Exception ex)
             {
@@ -160,7 +168,8 @@ namespace API_Template.Controllers
             return new GetHCDLBuffer_Input
             {
                 BU = "OPTO",
-                DEPT_ID = "SSD"
+                DEPT_ID = "SSD",
+                OPTIONAL = ""
             };
         }
 
@@ -173,6 +182,7 @@ namespace API_Template.Controllers
         {
             return new GetHCDLBuffer_Output
             {
+                DEPT_ID = "SSD",
                 DL_DEMAND = "200",
                 DL_ACT = "143",
             };
@@ -265,7 +275,8 @@ namespace API_Template.Controllers
         {
             return new GetNSB_Output
             {
-                NETWR = "10000",
+                currentNSB = "10000",
+                targetNSB = "10000"
             };
 
         }
@@ -293,12 +304,14 @@ namespace API_Template.Controllers
         {
             return new GetNUB_Output
             {
-                FKIMG = "10000",
+                currentNUB = "10000",
+                targetNUB = "10000"
             };
 
         }
     }
 
     #endregion
+
 }
 

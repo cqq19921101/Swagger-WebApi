@@ -23,7 +23,7 @@ namespace API.Model
     {
         public string BU { get; set; }//BU
         public string DEPT_ID { get; set; }//DEPT_ID
-
+        public string OPTIONAL { get; set; }
     }
 
     public class GetHC_Input
@@ -33,6 +33,7 @@ namespace API.Model
     }
     public class GetHCDLBuffer_Output
     {
+        public string DEPT_ID { get; set; }
         public string DL_DEMAND { get; set; }
         public string DL_ACT { get; set; }
     }
@@ -101,6 +102,7 @@ namespace API.Model
         /// <returns>Datatable 轉 Json</returns>
         public static string GetHC_QueryLvData(GetHC_Input Parameter)
         {
+            opc.Clear();
             string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
             opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
             opc.Add(DataPara.CreateProcParameter("@P_ID_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
@@ -117,6 +119,7 @@ namespace API.Model
         /// <returns>Datatable 轉 Json</returns>
         public static string GetHC_QueryDLBuffer(GetHCDLBuffer_Input Parameter)
         {
+            opc.Clear();
             string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
             opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
             opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
@@ -142,7 +145,8 @@ namespace API.Model
     }
     public class GetNSB_Output
     {
-        public string NETWR { get; set; }//NETWR
+        public string currentNSB { get; set; }//NETWR
+        public string targetNSB { get; set; }//NETWR
     }
 
     #endregion
@@ -168,15 +172,18 @@ namespace API.Model
         public static string GetNSB(GetNSB_Input Parameter)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(@"SELECT Sum(NETWR) as NETWR
-                        FROM [SAPTEST].[dbo].[ZTVDSS913]
-                        where substring(SPMON,1,4) = year(getdate()) and PRODH = @PRODH and WERKS = @WERKS");
+            sb.Append(@"SELECT Sum(T1.NETWR) as currentNSB,Convert(float,T2.LineCode) as targetNSB
+                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                        where substring(T1.SPMON,1,4) = year(getdate()) and T1.PRODH = '10060' and T1.WERKS = '2301'
+                        and T2.Line = 'NSB'
+                        Group by T2.LineCode");
             opc.Clear();
             opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-            string NETWR = sdb.GetRowString(sb.ToString(), opc, "NETWR");
-            m.Add(NETWR);
-            return jss.Serialize(m);
+            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+            //string NETWR = sdb.GetRowString(sb.ToString(), opc, "NETWR");
+            //m.Add(NETWR);
+            return JsonConvert.SerializeObject(dt);
 
         }
     }
@@ -195,7 +202,8 @@ namespace API.Model
     }
     public class GetNUB_Output
     {
-        public string FKIMG { get; set; }//NUB 單位是台幣
+        public string currentNUB { get; set; }//NUB 單位是台幣
+        public string targetNUB { get; set; }//NUB 單位是台幣
     }
 
     #endregion
@@ -217,16 +225,20 @@ namespace API.Model
         public static string GetNUB(GetNUB_Input Parameter)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(@"SELECT Sum(FKIMG) as FKIMG
-                        FROM [SAPTEST].[dbo].[ZTVDSS913]
-                        where substring(SPMON,1,4) = year(getdate()) and PRODH = @PRODH and WERKS = @WERKS");
+            sb.Append(@"SELECT Sum(T1.FKIMG) as currentNUB, Convert(float,T2.LineCode) as targetNUB
+                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                        where substring(T1.SPMON,1,4) = year(getdate()) and T1.PRODH = '10060' and T1.WERKS = '2301'
+                        and T2.Line = 'NUB'
+                        Group by T2.LineCode");
             opc.Clear();
             opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
             opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-            string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
-            m.Add(FKIMG);
-            return jss.Serialize(m);
+            DataTable dt = sdb.GetDataTable(sb.ToString(),opc);
+            return JsonConvert.SerializeObject(dt);
 
+            //string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
+            //m.Add(FKIMG);
+            ////return jss.Serialize(m);
         }
     }
     #endregion

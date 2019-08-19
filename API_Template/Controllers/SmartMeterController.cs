@@ -13,6 +13,7 @@ using System.Data;
 using System.Text;
 using System.Collections;
 using System.Web;
+using Newtonsoft.Json.Linq;
 
 namespace API_Template.Controllers
 {
@@ -30,22 +31,24 @@ namespace API_Template.Controllers
 
         #region SmartMeter Post
         /// <summary>
-        /// 抓取當天實時用電量 By did and functiontype
+        /// 抓取當天預警的用電量 by 車間 最新的一條預警數據
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPost]
-        [SwaggerRequestExample(typeof(SmartMeterKWH_Input), typeof(InputExampleKWH))]
-        [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleKWH))]
-        public ReturnMessage GetMeterKWHReal(SmartMeterKWH_Input item)
+        [SwaggerRequestExample(typeof(SmartMeterKWHAlert_Input), typeof(InputExampleKWHAlert))]
+        [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleKWHAlert))]
+        public ReturnMessage GetMeterKWHAlert(SmartMeterKWHAlert_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
             string Result = "";
             try
             {
-                Result = GetMeter_Helper.GetMeterKWHReal(item);
+                Result = GetMeter_Helper.GetMeterKWHAlert(item);
+                JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Info = "Success";
+                rm.Array = jArray;
             }
             catch (Exception ex)
             {
@@ -59,22 +62,24 @@ namespace API_Template.Controllers
 
 
         /// <summary>
-        /// 抓取每天的用電量 By did 
+        /// 抓取每天/每月的用電量 累計的數據
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(SmartMeterKWH_Input), typeof(InputExampleKWHDay))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleKWHDay))]
-        public ReturnMessage GetMeterKWHDay(SmartMeterKWH_Input item)
+        public ReturnMessage GetMeterKWH(SmartMeterKWH_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
             string Result = "";
             try
             {
-                Result = GetMeter_Helper.GetMeterKWHDay(item);
+                Result = GetMeter_Helper.GetMeterKWH(item);
+                JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Info = "Success";
+                rm.Array = jArray;
             }
             catch (Exception ex)
             {
@@ -102,8 +107,10 @@ namespace API_Template.Controllers
             try
             {
                 Result = GetMeter_Helper.GetMeterUTS(item);
+                JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Info = "Success";
+                rm.Array = jArray;
             }
             catch (Exception ex)
             {
@@ -121,37 +128,37 @@ namespace API_Template.Controllers
     }
 
 
-    #region Example Model KWH Real
-    public class InputExampleKWH : IExamplesProvider
+    #region Example Model KWH ALERT
+    public class InputExampleKWHAlert : IExamplesProvider
     {
         public object GetExamples()
         {
             return new SmartMeterKWH_Input
             {
-                did = "190124",
-                functiontype = "normal"
+                did = "190124"
             };
         }
 
     }
-    public class OutputExampleKWH : IExamplesProvider
+    public class OutputExampleKWHAlert : IExamplesProvider
     {
         public object GetExamples()
         {
-            return new SmartMeterKWH_Output
+            return new SmartMeterKWHAlert_Output
                 {
-                     did = "1234",
+                     Line = "ALED",
+                     did = "190124",
                      type = "R",
                      dt = "2019-06-20 11:15:00.000",
-                     total = "100",
-                     BU = "OPS"
+                     ActValue = "1000",
+                     TargetValue = "980"
                 };
 
         }
     }
     #endregion
 
-    #region Example Model KWH Day
+    #region Example Model KWH Day and Month
     public class InputExampleKWHDay : IExamplesProvider
     {
         public object GetExamples()
@@ -159,7 +166,7 @@ namespace API_Template.Controllers
             return new SmartMeterKWH_Input
             {
                 did = "190124",
-                functiontype = "normal"
+                functiontype = "Day"
             };
         }
 
@@ -170,11 +177,10 @@ namespace API_Template.Controllers
         {
             return new SmartMeterKWH_Output
             {
+                Line = "ALED",
                 did = "1234",
-                type = "D",
-                dt = "2019-06-20 11:15:00.000",
-                total = "100",
-                BU = "OPS"
+                ActValue = "1000",
+                TargetValue = "200000"
             };
 
         }

@@ -9,32 +9,55 @@ using System.Configuration;
 using System.Text;
 using System.Collections;
 using Newtonsoft.Json;
+using System.Data.SqlClient;
 
 namespace API.Model
 {
 
     #region KWH實例化
+
+    /// <summary>
+    /// 每天,每月用電量的條件
+    /// </summary>
     public class SmartMeterKWH_Input
     {
         public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
         //public string type { get; set; }//R-實時  D-昨天
 
         public string functiontype { get; set; }//方法類型
-
-
     }
-
 
     public class SmartMeterKWH_Output
     {
+        public string Line { get; set; }//車間名
         public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
-        public string type { get; set; }//R-實時  D-前一天
+        public string ActValue { get; set; }//實際值  累計的數據
 
-        public string dt { get; set; }//時間
-        public string total { get; set; }//用電量
-        public string BU { get; set; }//BU   例：OPS
+        public string TargetValue { get; set; }//上限值
 
     }
+
+
+    /// <summary>
+    /// 抓取每天預警用電量的條件
+    /// </summary>
+    public class SmartMeterKWHAlert_Input
+    {
+        public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
+    }
+
+    public class SmartMeterKWHAlert_Output
+    {
+        public string Line { get; set; }//車間名
+        public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
+        public string type { get; set; }//
+        public string dt { get; set; }//
+        public string ActValue { get; set; }//
+
+        public string TargetValue { get; set; }//上限值
+
+    }
+
     #endregion
 
     #region UTS實例化
@@ -71,21 +94,19 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetMeterKWHReal(SmartMeterKWH_Input Parameter)
+        public static string GetMeterKWHAlert(SmartMeterKWHAlert_Input Parameter)
         {
             int Limit = GetLimitReal(Parameter.did);//根據did抓取對應的上限值
             StringBuilder sb = new StringBuilder();
-            sb.Append("select  did,type,  convert(varchar(16),dt,121) as dt,total,BU from KWH where did = @did and type = 'R'   and DateDiff(dd,dt,getdate())=0 ");
+            sb.Append(@"select Top 1 T2.Line, T1.did, T1.type, convert(varchar(16), T1.dt, 121) as dt, Convert(Float,T1.total)  AS ActValue, Convert(Float,T3.VALUE1) AS TargetValue
+                        from KWH T1, dbo.TB_Line_Param T2, dbo.TB_APPLICATION_PARAM T3
+                        where T3.VALUE2 = @did and T1.did = @did and T2.LineCode = @did
+                        and T1.type = 'R'
+                        and DateDiff(dd, T1.dt, getdate()) = 0 and total > @total
+                        order by dt desc");
             opc.Clear();
-            switch (Parameter.functiontype.ToLower())
-            {
-                case "abnormal":
-                    sb.Append("and total > @total");
-                    opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
-                    break;
-            }
-            sb.Append(" order by dt desc");
             opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+            opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
             DataTable dt =  sdb.GetDataTable(sb.ToString(), opc);
             return JsonConvert.SerializeObject(dt);
 
@@ -96,23 +117,44 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetMeterKWHDay(SmartMeterKWH_Input Parameter)
+        public static string GetMeterKWH(SmartMeterKWH_Input Parameter)
         {
-            int Limit = GetLimitDay(Parameter.did);//根據did抓取對應的上限值
+            SqlConnection cn = new SqlConnection(conn);
+            cn.Open();
             StringBuilder sb = new StringBuilder();
-            sb.Append("select  did,type,  convert(varchar(10),dt,121) as dt,total,BU from KWH where did = @did and type = 'D' and  DateDiff(dd,dt,getdate())=1   ");
+            sb.Append(@" select T3.Line, T1.did, SUM(convert(int,T1.total)) as ActValue, Convert(Float,T2.VALUE1) as TargetValue 
+                         from dbo.KWH T1, TB_APPLICATION_PARAM T2, dbo.TB_Line_Param T3
+                         where  T1.type = 'R' 
+                         and T2.PARAME_ITEM = 'upper'  AND T2.VALUE2 = @did and T1.did = @did and T3.LineCode = @did
+                          ");
             opc.Clear();
-            switch (Parameter.functiontype.ToLower())
+            switch (Parameter.functiontype)
             {
-                case "abnormal":
-                    sb.Append("and total > @total");
-                    opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
+                case "Day":
+                    sb.Append(" and DateDiff(dd,dt,getdate())=0 and T2.VALUE5 = 'Day'");
+                    break;
+                case "Month":
+                    sb.Append(" and DateDiff(MM,dt,getdate())=0 and T2.VALUE5 = 'Month'");
+                    break;
+                default:
+                    sb.Append(" T1.did = ''");
                     break;
             }
-            sb.Append(" order by dt desc");
-            opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+            sb.Append(" group by did, VALUE1, PARAME_NAME, Line");
+            DataTable dt = new DataTable();
+            using (SqlCommand cmd = new SqlCommand(sb.ToString(), cn))
+            {
+                cmd.Parameters.AddWithValue("@did", Parameter.did);
+                using (SqlDataReader dr = cmd.ExecuteReader())
+                {
+                    dt.Load(dr);
+                }
+            }
             return JsonConvert.SerializeObject(dt);
+
+            //opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+            //DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+            //return JsonConvert.SerializeObject(dt);
 
         }
 
