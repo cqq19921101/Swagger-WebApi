@@ -14,6 +14,7 @@ using System.Text;
 using System.Collections;
 using System.Web;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace API_Template.Controllers
 {
@@ -33,42 +34,45 @@ namespace API_Template.Controllers
         /// <summary>
         /// 抓取當天預警的用電量 by 車間 最新的一條預警數據
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="para"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(SmartMeterKWHAlert_Input), typeof(InputExampleKWHAlert))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleKWHAlert))]
-        public ReturnMessage GetMeterKWHAlert(SmartMeterKWHAlert_Input item)
-        {
-            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
-            try
-            {
-                Result = GetMeter_Helper.GetMeterKWHAlert(item);
-                JArray jArray = JArray.Parse(Result);
-                rm.Success = true;
-                rm.Info = "Success";
-                rm.Array = jArray;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Got error. " + ex.Message);
-                rm.Success = false;
-                rm.Info = "Error";
-            }
+        public async Task<IHttpActionResult> GetMeterKWHAlert([FromBody] SmartMeterKWHAlert_Input para) => Ok(await GetMeter_Helper.GetMeterKWHAlert(para));
+        //public ReturnMessage GetMeterKWHAlert(SmartMeterKWHAlert_Input item)
+        //{
+        //    ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+        //    string Result = "";
+        //    try
+        //    {
+        //        Result = GetMeter_Helper.GetMeterKWHAlert(item);
+        //        JArray jArray = JArray.Parse(Result);
+        //        rm.Success = true;
+        //        rm.Status = "success";
+        //        rm.Command = "GetMeterKWHAlert";
+        //        rm.Array = jArray;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error("Got error. " + ex.Message);
+        //        rm.Success = false;
+        //        rm.Status = "Error";
+        //    }
 
-            return rm;
-        }
+        //    return rm;
+        //}
 
 
         /// <summary>
         /// 抓取每天/每月的用電量 累計的數據
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="para"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(SmartMeterKWH_Input), typeof(InputExampleKWHDay))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleKWHDay))]
+        //public async Task<IHttpActionResult> GetMeterKWH([FromBody] SmartMeterKWH_Input para) => Ok(await GetMeter_Helper.GetMeterKWH(para));
         public ReturnMessage GetMeterKWH(SmartMeterKWH_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
@@ -78,14 +82,15 @@ namespace API_Template.Controllers
                 Result = GetMeter_Helper.GetMeterKWH(item);
                 JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = "Success";
+                rm.Status = "success";
+                rm.Command = "GetMeterKWH";
                 rm.Array = jArray;
             }
             catch (Exception ex)
             {
                 Log.Error("Got error. " + ex.Message);
                 rm.Success = false;
-                rm.Info = "Error";
+                rm.Status = "Error";
             }
 
             return rm;
@@ -93,34 +98,36 @@ namespace API_Template.Controllers
 
 
         /// <summary>
-        /// 抓取每天UTS By PRODUCTLINECODE
+        ///  抓取每天UTS By PRODUCTLINECODE
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="para"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(SmartMeterUTS_Input), typeof(InputExampleUTS))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleUTS))]
-        public ReturnMessage GetMeterUTS(SmartMeterUTS_Input item)
-        {
-            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
-            try
-            {
-                Result = GetMeter_Helper.GetMeterUTS(item);
-                JArray jArray = JArray.Parse(Result);
-                rm.Success = true;
-                rm.Info = "Success";
-                rm.Array = jArray;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Got error. " + ex.Message);
-                rm.Success = false;
-                rm.Info = "Error";
-            }
+        public async Task<IHttpActionResult> GetMeterUTS([FromBody] SmartMeterUTS_Input para) => Ok(await GetMeter_Helper.GetMeterUTS(para));
+        //public ReturnMessage GetMeterUTS(SmartMeterUTS_Input item)
+        //{
+        //    ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+        //    string Result = "";
+        //    try
+        //    {
+        //        Result = GetMeter_Helper.GetMeterUTS(item);
+        //        JArray jArray = JArray.Parse(Result);
+        //        rm.Success = true;
+        //        rm.Status = "success";
+        //        rm.Command = "GetMeterUTS";
+        //        rm.Array = jArray;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error("Got error. " + ex.Message);
+        //        rm.Success = false;
+        //        rm.Status = "Error";
+        //    }
 
-            return rm;
-        }
+        //    return rm;
+        //}
 
         #endregion
 

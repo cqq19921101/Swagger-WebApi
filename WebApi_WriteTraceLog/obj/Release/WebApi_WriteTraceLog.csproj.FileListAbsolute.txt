@@ -1,0 +1,7 @@
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\bin\Release\WebApi_WriteTraceLog.dll
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\bin\Release\WebApi_WriteTraceLog.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\bin\Release\log4net.dll
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\obj\Release\WebApi_WriteTraceLog.csprojResolveAssemblyReference.cache
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\obj\Release\WebApi_WriteTraceLog.dll
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\obj\Release\WebApi_WriteTraceLog.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\bin\Release\WebApi_WriteTraceLog.dll.config

@@ -224,7 +224,6 @@
     <Content Include="bin\DataTier.dll" />
     <Content Include="bin\jose-jwt.dll" />
     <Content Include="bin\LiteOn.WebAPI.Auth.dll" />
-    <Content Include="bin\log4net.dll" />
     <Content Include="bin\Microsoft.AI.Agent.Intercept.dll" />
     <Content Include="bin\Microsoft.AI.DependencyCollector.dll" />
     <Content Include="bin\Microsoft.AI.PerfCounterCollector.dll" />
@@ -260,7 +259,6 @@
     <Content Include="bin\WebActivatorEx.dll" />
     <Content Include="bin\WebGrease.dll" />
     <Content Include="Global.asax" />
-    <Content Include="Log4Net.Config.xml" />
     <Content Include="swagger-ui-master\dist\css\print.css" />
     <Content Include="swagger-ui-master\dist\css\reset.css" />
     <Content Include="swagger-ui-master\dist\css\screen.css" />
@@ -318,6 +316,9 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\FactoryManagementController.cs" />
+    <Compile Include="Model\BackupNotes.cs" />
+    <Compile Include="Model\MESOPSCZ.cs" />
+    <Compile Include="Controllers\MESOPSCZController.cs" />
     <Compile Include="Controllers\SmartWaterController.cs" />
     <Compile Include="Controllers\SmartMeterController.cs" />
     <Compile Include="Filter\AuthFilter.cs" />
@@ -352,6 +353,7 @@
     <Content Include="bin\roslyn\Microsoft.CSharp.Core.targets" />
     <Content Include="bin\roslyn\Microsoft.VisualBasic.Core.targets" />
     <Content Include="bin\roslyn\VBCSCompiler.exe.config" />
+    <Content Include="App.config" />
     <None Include="Properties\PublishProfiles\Web API.pubxml" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -364,7 +366,20 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\WebApi_DataProcessing\WebApi_DataProcessing.csproj">
+      <Project>{27538539-6E84-4F4F-8D55-4CADB3D7A812}</Project>
+      <Name>WebApi_DataProcessing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebApi_WriteTraceLog\WebApi_WriteTraceLog.csproj">
+      <Project>{3D415BEB-555B-4C4F-A843-983839700E6F}</Project>
+      <Name>WebApi_WriteTraceLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Z_CallBAPI_Function\Z_CallBAPI_Function.csproj">
+      <Project>{3536913F-9B96-4091-8C35-D084D4D19F11}</Project>
+      <Name>Z_CallBAPI_Function</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>

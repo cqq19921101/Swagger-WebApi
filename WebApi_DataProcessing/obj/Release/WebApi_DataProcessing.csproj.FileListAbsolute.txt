@@ -1,0 +1,14 @@
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\WebApi_DataProcessing.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\WebApi_DataProcessing.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\EntityFramework.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\EntityFramework.SqlServer.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\EntityFramework.xml
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\EntityFramework.SqlServer.xml
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\zh-Hant\EntityFramework.resources.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\obj\Release\WebApi_DataProcessing.csprojResolveAssemblyReference.cache
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\obj\Release\WebApi_DataProcessing.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\obj\Release\WebApi_DataProcessing.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.EA.BLL.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.EA.DAL.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.EA.Model.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.Corp.IT.EA.CMCC.dll

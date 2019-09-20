@@ -13,6 +13,8 @@ using System.Data;
 using System.Text;
 using System.Collections;
 using System.Web;
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace API_Template.Controllers
 {
@@ -30,62 +32,25 @@ namespace API_Template.Controllers
 
         #region SmartWater Post
         /// <summary>
-        /// 抓取當天實時用水量 By did and functiontype
+        /// 抓取当天,当月累计的用水量
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="para"></param>
         /// <returns></returns>
         [HttpPost]
-        [SwaggerRequestExample(typeof(SmartWaterReal_Input), typeof(InputExampleReal))]
-        [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleReal))]
-        public ReturnMessage GetWaterReal(SmartWaterReal_Input item)
-        {
-            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
-            try
-            {
-                Result = GetWater_Helper.GetWaterReal(item);
-                rm.Success = true;
-                rm.Info = Result;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Got error. " + ex.Message);
-                rm.Success = false;
-                rm.Info = "Error";
-            }
-
-            return rm;
-        }
+        [SwaggerRequestExample(typeof(SmartWater_Input), typeof(InputExampleW))]
+        [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleW))]
+        public async Task<IHttpActionResult> GetWater([FromBody]SmartWater_Input para) => Ok(await GetWater_Helper.GetWater(para));
 
 
         /// <summary>
-        /// 抓取每天的用水量（當天抓取昨日的用水量） By did 
+        /// 抓取每天用水量异常记录 最新的一笔 
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="para"></param>
         /// <returns></returns>
         [HttpPost]
-        [SwaggerRequestExample(typeof(SmartWaterDay_Input), typeof(InputExampleDay))]
-        [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleDay))]
-        public ReturnMessage GetWaterDay(SmartWaterDay_Input item)
-        {
-            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
-            try
-            {
-                Result = GetWater_Helper.GetWaterDay(item);
-                rm.Success = true;
-                rm.Info = Result;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Got error. " + ex.Message);
-                rm.Success = false;
-                rm.Info = "Error";
-            }
-
-            return rm;
-        }
-
+        [SwaggerRequestExample(typeof(SmartWaterAlert_Input), typeof(InputExampleAlert))]
+        [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleAlert))]
+        public async Task<IHttpActionResult> GetWaterAlert([FromBody] SmartWaterAlert_Input para) => Ok(await GetWater_Helper.GetWaterAlert(para));
 
         #endregion
 
@@ -94,31 +59,27 @@ namespace API_Template.Controllers
 
 
     #region Example Model Water Real
-    public class InputExampleReal : IExamplesProvider
+    public class InputExampleW : IExamplesProvider
     {
         public object GetExamples()
         {
-            return new SmartWaterReal_Input
+            return new SmartWater_Input
             {
                 did = "A1S",
-                functiontype = "normal"
+                functiontype = "Day"
             };
         }
 
     }
-    public class OutputExampleReal : IExamplesProvider
+    public class OutputExampleW : IExamplesProvider
     {
         public object GetExamples()
         {
             return new SmartWater_Output
             {
                 did = "A1S",
-                type = "R",
-                dt = "2019-06-20 00:00:00.000",
-                UPDATE_TIME = "01:00:00",
-                totalA = "120180.5",
-                total = "13.13",
-                BU = "OPS"
+                ActValue = "100",
+                TargetValue = "200"
             };
 
         }
@@ -126,31 +87,29 @@ namespace API_Template.Controllers
     #endregion
 
     #region Example Model Water Day
-    public class InputExampleDay : IExamplesProvider
+    public class InputExampleAlert : IExamplesProvider
     {
         public object GetExamples()
         {
-            return new SmartWaterDay_Input
+            return new SmartWaterAlert_Input
             {
-                did = "A1S",
-                functiontype = "normal"
+                did = "A1S"
             };
         }
 
     }
-    public class OutputExampleDay : IExamplesProvider
+    public class OutputExampleAlert : IExamplesProvider
     {
         public object GetExamples()
         {
-            return new SmartWater_Output
+            return new SmartWaterAlert_Output
             {
                 did = "A1S",
                 type = "R",
                 dt = "2019-06-20 00:00:00.000",
-                UPDATE_TIME = "2018-06-20",
-                totalA = "120180.5",
-                total = "355.22",
-                BU = "OPS"
+                UPDATE_TIME = "01:00:00",
+                ActValue = "300",
+                TargetValue = "200"
             };
 
         }

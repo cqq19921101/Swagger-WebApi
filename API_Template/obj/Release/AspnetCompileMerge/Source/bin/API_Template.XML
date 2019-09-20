@@ -18,53 +18,81 @@
             <param name="vRequest"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.GetHCController.GetHC_QueryLvData(API.Model.GetHC_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetHC_QueryLvData(API.Model.GetHC_Input)">
             <summary>
             QueryLvData
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.GetHCController.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetHC_QueryDLBuffer(API.Model.GetHCDLBuffer_Input)">
             <summary>
             QueryDLBuffer
             </summary>
-            <param name="item"></param>
+            <param name="para"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.SmartWaterController.GetWaterReal(API.Model.SmartWaterReal_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetNSB(API.Model.GetNSB_Input)">
             <summary>
-            抓取當天實時用水量 By did and functiontype
+            GetNSB  ----------> 異步處理 
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.SmartWaterController.GetWaterDay(API.Model.SmartWaterDay_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetNUB(API.Model.GetNUB_Input)">
             <summary>
-            抓取每天的用水量（當天抓取昨日的用水量） By did 
+            GetNUB ----------> 異步處理 
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterKWHReal(API.Model.SmartMeterKWH_Input)">
+        <member name="M:API_Template.Controllers.FactoryManagementController.GetTECO(API.Model.TECO_Input)">
             <summary>
-            抓取當天實時用電量 By did and functiontype
+            GetTECOYield
+            </summary>
+            <param name="para"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.MESOPSCZController.GetOAY(API.Model.GetOAY_Input)">
+            <summary>
+            QueryLvData
             </summary>
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterKWHDay(API.Model.SmartMeterKWH_Input)">
+        <member name="M:API_Template.Controllers.SmartWaterController.GetWater(API.Model.SmartWater_Input)">
             <summary>
-            抓取每天的用電量 By did 
+            抓取当天,当月累计的用水量
             </summary>
-            <param name="item"></param>
+            <param name="para"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartWaterController.GetWaterAlert(API.Model.SmartWaterAlert_Input)">
+            <summary>
+            抓取每天用水量异常记录 最新的一笔 
+            </summary>
+            <param name="para"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterKWHAlert(API.Model.SmartMeterKWHAlert_Input)">
+            <summary>
+            抓取當天預警的用電量 by 車間 最新的一條預警數據
+            </summary>
+            <param name="para"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.SmartMeterController.GetMeterKWH(API.Model.SmartMeterKWH_Input)">
+            <summary>
+            抓取每天/每月的用電量 累計的數據
+            </summary>
+            <param name="para"></param>
             <returns></returns>
         </member>
         <member name="M:API_Template.Controllers.SmartMeterController.GetMeterUTS(API.Model.SmartMeterUTS_Input)">
             <summary>
-            抓取每天UTS By PRODUCTLINECODE
+             抓取每天UTS By PRODUCTLINECODE
             </summary>
-            <param name="item"></param>
+            <param name="para"></param>
             <returns></returns>
         </member>
         <member name="M:API_Template.Controllers.TestServicesController.getHello(API_Template.Controllers.TestServicesController.TestInput)">
@@ -91,6 +119,18 @@
             </remarks>
             <returns></returns>
         </member>
+        <member name="T:API.Model.GETOAY_Helper">
+            <summary>
+            GetOAY
+            </summary>
+        </member>
+        <member name="M:API.Model.GETOAY_Helper.GetOAY(API.Model.GetOAY_Input)">
+            <summary>
+            GetNSB
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
         <member name="T:API.Model.ReturnMessage">
             <summary>
             服务端向客户端返回信息类
@@ -101,24 +141,19 @@
             请求状态
             </summary>
         </member>
-        <member name="P:API.Model.ReturnMessage.TypeID">
-            <summary>
-            信息类型
-            </summary>
-        </member>
-        <member name="P:API.Model.ReturnMessage.Info">
+        <member name="P:API.Model.ReturnMessage.Status">
             <summary>
             提示信息
             </summary>
         </member>
-        <member name="P:API.Model.ReturnMessage.Redirect">
+        <member name="P:API.Model.ReturnMessage.Command">
             <summary>
-            重转地址
+            提示信息
             </summary>
         </member>
-        <member name="P:API.Model.ReturnMessage.Data">
+        <member name="P:API.Model.ReturnMessage.Array">
             <summary>
-            数据集
+            JArray
             </summary>
         </member>
         <member name="T:API.Model.GetHC_Helper">
@@ -133,26 +168,52 @@
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
         </member>
-        <member name="M:API.Model.GetHC_Helper.GetHC_QueryDLBuffer(API.Model.GetHC_Input)">
+        <member name="M:API.Model.GetHC_Helper.GetHC_DLBuffer(API.Model.GetHCDLBuffer_Input)">
             <summary>
             QueryDLBuffer
             </summary>
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
         </member>
+        <member name="T:API.Model.GetNSB_Helper">
+            <summary>
+            GetNSB CRUD
+            </summary>
+        </member>
+        <member name="M:API.Model.GetNSB_Helper.GetNSB(API.Model.GetNSB_Input)">
+            <summary>
+            GetNSB
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="M:API.Model.GetNUB_Helper.GetNUB(API.Model.GetNUB_Input)">
+            <summary>
+            異步處理 NUB資料
+            </summary>
+            <param name="Para"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API.Model.TECO_Helper.GetTECO(API.Model.TECO_Input)">
+            <summary>
+            GetTECO
+            </summary>
+            <param name="Parameter"></param>
+            <returns></returns>
+        </member>
         <member name="T:API.Model.GetWater_Helper">
             <summary>
             智能水錶 CRUD
             </summary>
         </member>
-        <member name="M:API.Model.GetWater_Helper.GetWaterReal(API.Model.SmartWaterReal_Input)">
+        <member name="M:API.Model.GetWater_Helper.GetWater(API.Model.SmartWater_Input)">
             <summary>
             智能水錶 抓取每天實時的用水量 (每小時更新) normal:正常  abnormal:異常
             </summary>
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
         </member>
-        <member name="M:API.Model.GetWater_Helper.GetWaterDay(API.Model.SmartWaterDay_Input)">
+        <member name="M:API.Model.GetWater_Helper.GetWaterAlert(API.Model.SmartWaterAlert_Input)">
             <summary>
             智能水錶抓取每天的總用水量（當天抓取昨日整天的總用水量）
             </summary>
@@ -173,21 +234,31 @@
             <param name="did"></param>
             <returns>return int</returns>
         </member>
+        <member name="T:API.Model.SmartMeterKWH_Input">
+            <summary>
+            每天,每月用電量的條件
+            </summary>
+        </member>
+        <member name="T:API.Model.SmartMeterKWHAlert_Input">
+            <summary>
+            抓取每天預警用電量的條件
+            </summary>
+        </member>
         <member name="T:API.Model.GetMeter_Helper">
             <summary>
             智能電錶 CRUD
             </summary>
         </member>
-        <member name="M:API.Model.GetMeter_Helper.GetMeterKWHReal(API.Model.SmartMeterKWH_Input)">
+        <member name="M:API.Model.GetMeter_Helper.GetMeterKWHAlert(API.Model.SmartMeterKWHAlert_Input)">
             <summary>
-            智能電錶抓取當天實時用電量異常的數據和正常的數據（type=normal --- 正常數據 ; type = abnormal --- 超過上限值的數據）
+            抓取當天預警的用電量 by 車間 最新的一條預警數據
             </summary>
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
         </member>
-        <member name="M:API.Model.GetMeter_Helper.GetMeterKWHDay(API.Model.SmartMeterKWH_Input)">
+        <member name="M:API.Model.GetMeter_Helper.GetMeterKWH(API.Model.SmartMeterKWH_Input)">
             <summary>
-            智能電錶抓取總用電量 當天抓取昨日一天的總用電量
+            抓取每天/每月的用電量 累計的數據
             </summary>
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>

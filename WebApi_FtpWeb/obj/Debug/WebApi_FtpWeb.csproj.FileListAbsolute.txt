@@ -1,0 +1,8 @@
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\bin\Debug\WebApi_FtpWeb.dll
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\bin\Debug\WebApi_FtpWeb.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\bin\Debug\WebApi_WriteTraceLog.dll
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\bin\Debug\log4net.dll
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\bin\Debug\WebApi_WriteTraceLog.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\obj\Debug\WebApi_FtpWeb.csprojResolveAssemblyReference.cache
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\obj\Debug\WebApi_FtpWeb.dll
+D:\WORKSHOP\swagger-webapi\WebApi_FtpWeb\obj\Debug\WebApi_FtpWeb.pdb

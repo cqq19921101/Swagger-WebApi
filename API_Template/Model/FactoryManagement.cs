@@ -10,6 +10,10 @@ using System.Text;
 using System.Collections;
 using Newtonsoft.Json;
 using System.Web.Script.Serialization;
+using System.Threading.Tasks;
+using WebApi_DataProcessing;
+using Newtonsoft.Json.Linq;
+using WebApi_WriteTraceLog;
 
 namespace API.Model
 {
@@ -31,7 +35,7 @@ namespace API.Model
         public string BU { get; set; }//BU
 
     }
-    public class GetHCDLBuffer_Output
+    public class GetHCDLBuffer_Output : ReturnMessage
     {
         public string DEPT_ID { get; set; }
         public string DL_DEMAND { get; set; }
@@ -117,16 +121,36 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetHC_QueryDLBuffer(GetHCDLBuffer_Input Parameter)
+        public static async Task<GetHCDLBuffer_Output> GetHC_DLBuffer(GetHCDLBuffer_Input Parameter)
         {
-            opc.Clear();
-            string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
-            opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
-            opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
-            opc.Add(DataPara.CreateProcParameter("@P_DEPTID", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.DEPT_ID));
-            DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer_API", opc);
-            return JsonConvert.SerializeObject(dt);
+            GetHCDLBuffer_Output rm = new GetHCDLBuffer_Output();
 
+            try
+            {
+                await Task.Run(() =>
+                {
+                    opc.Clear();
+                    string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+                    opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
+                    opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
+                    opc.Add(DataPara.CreateProcParameter("@P_DEPTID", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.DEPT_ID));
+                    DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer_API", opc);
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetNUB";
+                    rm.Array = jArray;
+                });
+
+
+            }
+            catch (Exception ex)
+            {
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetNUB";
+            }
+            return rm;
         }
 
 
@@ -143,7 +167,7 @@ namespace API.Model
         public string OPTIONAL { get; set; }
 
     }
-    public class GetNSB_Output
+    public class GetNSB_Output : ReturnMessage
     {
         public string currentNSB { get; set; }//NETWR
         public string targetNSB { get; set; }//NETWR
@@ -169,23 +193,63 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetNSB(GetNSB_Input Parameter)
+        public static async Task<GetNSB_Output> GetNSB(GetNSB_Input Parameter)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(@"SELECT Sum(T1.NETWR) as currentNSB,Convert(float,T2.LineCode) as targetNSB
-                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-                        where substring(T1.SPMON,1,4) = year(getdate()) and T1.PRODH = '10060' and T1.WERKS = '2301'
-                        and T2.Line = 'NSB'
-                        Group by T2.LineCode");
-            opc.Clear();
-            opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
-            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-            //string NETWR = sdb.GetRowString(sb.ToString(), opc, "NETWR");
-            //m.Add(NETWR);
-            return JsonConvert.SerializeObject(dt);
+            GetNSB_Output rm = new GetNSB_Output();
 
+            try
+            {
+                await Task.Run(() =>
+                {
+                    StringBuilder sb = new StringBuilder();
+
+                    switch (Parameter.PRODH.ToUpper())
+                    {
+                        case "ALL":
+                            sb.Append(@"
+                                        SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.NETWR)) as currentNSB, 
+                                        Convert(bigint,T2.LineCode) as targetNSB
+                                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                                        and T2.Line = 'NSB' AND  T2.Value1 = 'ALL'
+                                        group by T2.LineCode,T1.SPMON");
+                            opc.Clear();
+                            break;
+                        default:
+                            sb.Append(@"SELECT T1.SPMON, T1.PRODH,Sum(convert(bigint,T1.NETWR)) as currentNSB, Convert(bigint,T2.LineCode) as targetNSB
+                                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                                and T2.Line = 'NSB'  and T2.Value1 = @PRODH
+                                ");
+                            opc.Clear();
+                            sb.Append(" and T1.PRODH = @PRODH");
+                            sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
+                            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+                            break;
+                    }
+                    opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
+                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetNSB";
+                    rm.Array = jArray;
+                });
+
+            }
+            catch (Exception ex)
+            {
+
+                //WriteTraceLog.Info("GetNSB 無資料！");
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetNSB";
+            }
+            return rm;
         }
+
+
+
     }
 
 
@@ -200,10 +264,11 @@ namespace API.Model
         public string OPTIONAL { get; set; }
 
     }
-    public class GetNUB_Output
+    public class GetNUB_Output : ReturnMessage
     {
         public string currentNUB { get; set; }//NUB 單位是台幣
         public string targetNUB { get; set; }//NUB 單位是台幣
+        //public JArray JA { get; set; }
     }
 
     #endregion
@@ -222,25 +287,139 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>string 轉 Json</returns>
-        public static string GetNUB(GetNUB_Input Parameter)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(@"SELECT Sum(T1.FKIMG) as currentNUB, Convert(float,T2.LineCode) as targetNUB
-                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-                        where substring(T1.SPMON,1,4) = year(getdate()) and T1.PRODH = '10060' and T1.WERKS = '2301'
-                        and T2.Line = 'NUB'
-                        Group by T2.LineCode");
-            opc.Clear();
-            opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
-            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-            DataTable dt = sdb.GetDataTable(sb.ToString(),opc);
-            return JsonConvert.SerializeObject(dt);
+        //public static string GetNUB(GetNUB_Input Parameter)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    switch (Parameter.PRODH.ToUpper())
+        //    {
+        //        case "ALL":
+        //            sb.Append(@"
+        //                        SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, 
+        //                        Convert(bigint,T2.LineCode) as targetNUB
+        //                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+        //                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+        //                        and T2.Line = 'NUB'  and T2.Value1 = 'ALL'
+        //                        group by T2.LineCode,T1.SPMON");
+        //            opc.Clear();
+        //            break;
+        //        default:
+        //            sb.Append(@"SELECT T1.SPMON, T1.PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, Convert(bigint,T2.LineCode) as targetNUB
+        //                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+        //                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+        //                and T2.Line = 'NUB'  and T2.Value1 = @PRODH
+        //                ");
+        //            sb.Append(" and T1.PRODH = @PRODH");
+        //            sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
+        //            opc.Clear();
+        //            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+        //            break;
+        //    }
+        //    opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
+        //    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+        //    return JsonConvert.SerializeObject(dt);
 
-            //string FKIMG = sdb.GetRowString(sb.ToString(), opc, "FKIMG");
-            //m.Add(FKIMG);
-            ////return jss.Serialize(m);
+        //}
+
+
+        /// <summary>
+        /// 異步處理 NUB資料
+        /// </summary>
+        /// <param name="Para"></param>
+        /// <returns></returns>
+        public static async Task<GetNUB_Output> GetNUB(GetNUB_Input Para)
+        {
+            GetNUB_Output rm = new GetNUB_Output();
+
+            try
+            {
+                await Task.Run(() =>
+                {
+                    StringBuilder sb = new StringBuilder();
+                    switch (Para.PRODH.ToUpper())
+                    {
+                        case "ALL":
+                            sb.Append(@"
+                                        SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, 
+                                        Convert(bigint,T2.LineCode) as targetNUB
+                                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                                        and T2.Line = 'NUB' AND  T2.Value1 = 'ALL'
+                                        group by T2.LineCode,T1.SPMON");
+                            opc.Clear();
+                            break;
+                        default:
+                            sb.Append(@"SELECT T1.SPMON, T1.PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, Convert(bigint,T2.LineCode) as targetNUB
+                                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                                and T2.Line = 'NUB' and T2.Value1 = @PRODH
+                                ");
+                            sb.Append(" and T1.PRODH = @PRODH");
+                            sb.Append("     group by T2.LineCode,T1.SPMON,T1.PRODH");
+                            opc.Clear();
+                            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Para.PRODH));
+                            break;
+                    }
+                    opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Para.WERKS));
+                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetNUB";
+                    rm.Array = jArray;
+
+                });
+
+            }
+            catch (Exception ex)
+            {
+                //WriteTraceLog.Info("GetNUB 無資料！");
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetNUB";
+
+            }
+
+            return rm;
         }
+
     }
+
+
+    #endregion
+
+    #region GetTECO
+    public class TECO_Input
+    {
+        public string PlantNo { get; set; }
+        public string Line { get; set; }
+    }
+
+    public class TECO_Output : ReturnMessage
+    {
+        public string PlantNo { get; set; }
+        public string Line { get; set; }
+        public string currentYield {get;set;}
+        public string targetTield { get; set; }
+    }
+
+    public static class TECO_Helper
+    {
+        /// <summary>
+        /// GetTECO
+        /// </summary>
+        /// <param name="Parameter"></param>
+        /// <returns></returns>
+        public static string  GetTECO(TECO_Input Parameter)
+        {
+            var FuncTeco = new DP_TECO();
+            return JsonConvert.SerializeObject(FuncTeco.ReturnTECOByCZOPS(Parameter.PlantNo, Parameter.Line));
+
+        }
+
+
+    }
+
+
     #endregion
 
 }

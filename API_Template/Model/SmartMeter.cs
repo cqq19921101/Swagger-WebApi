@@ -10,6 +10,10 @@ using System.Text;
 using System.Collections;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using WebApi_WriteTraceLog;
+using API_Template.Controllers;
 
 namespace API.Model
 {
@@ -27,7 +31,7 @@ namespace API.Model
         public string functiontype { get; set; }//方法類型
     }
 
-    public class SmartMeterKWH_Output
+    public class SmartMeterKWH_Output : ReturnMessage
     {
         public string Line { get; set; }//車間名
         public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
@@ -46,14 +50,13 @@ namespace API.Model
         public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
     }
 
-    public class SmartMeterKWHAlert_Output
+    public class SmartMeterKWHAlert_Output : ReturnMessage
     {
         public string Line { get; set; }//車間名
         public string did { get; set; }//電錶ID 例:190164-OPS ALED車間
         public string type { get; set; }//
         public string dt { get; set; }//
         public string ActValue { get; set; }//
-
         public string TargetValue { get; set; }//上限值
 
     }
@@ -69,7 +72,7 @@ namespace API.Model
         #endregion
     }
 
-    public class SmartMeterUTS_Output
+    public class SmartMeterUTS_Output : ReturnMessage
     {
         public string PLANTNO { get; set; }//廠別 默認2301
         public string PRODUCTLINECODE { get; set; }//車間編號 
@@ -85,48 +88,65 @@ namespace API.Model
     /// </summary>
     public class GetMeter_Helper
     {
+        private readonly static log4net.ILog Log = log4net.LogManager.GetLogger(typeof(LoginController));
         static string conn = ConfigurationManager.AppSettings["SmartMeterDBConnection"];
-        static  SqlDB sdb = new SqlDB(conn);
+        static SqlDB sdb = new SqlDB(conn);
         static ArrayList opc = new ArrayList();
 
         /// <summary>
-        /// 智能電錶抓取當天實時用電量異常的數據和正常的數據（type=normal --- 正常數據 ; type = abnormal --- 超過上限值的數據）
+        /// 抓取當天預警的用電量 by 車間 最新的一條預警數據
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetMeterKWHAlert(SmartMeterKWHAlert_Input Parameter)
+        public static async Task<SmartMeterKWHAlert_Output> GetMeterKWHAlert(SmartMeterKWHAlert_Input Parameter)
         {
-            int Limit = GetLimitReal(Parameter.did);//根據did抓取對應的上限值
-            StringBuilder sb = new StringBuilder();
-            sb.Append(@"select Top 1 T2.Line, T1.did, T1.type, convert(varchar(16), T1.dt, 121) as dt, Convert(Float,T1.total)  AS ActValue, Convert(Float,T3.VALUE1) AS TargetValue
-                        from KWH T1, dbo.TB_Line_Param T2, dbo.TB_APPLICATION_PARAM T3
-                        where T3.VALUE2 = @did and T1.did = @did and T2.LineCode = @did
-                        and T1.type = 'R'
-                        and DateDiff(dd, T1.dt, getdate()) = 0 and total > @total
-                        order by dt desc");
-            opc.Clear();
-            opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-            opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
-            DataTable dt =  sdb.GetDataTable(sb.ToString(), opc);
-            return JsonConvert.SerializeObject(dt);
+            SmartMeterKWHAlert_Output rm = new SmartMeterKWHAlert_Output();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    int Limit = GetLimitReal(Parameter.did);//根據did抓取對應的上限值
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(@"select Top 1 T2.Line, T1.did, T1.type, convert(varchar(16), T1.dt, 121) as dt, Convert(int,T1.total)  AS ActValue, Convert(int,T3.VALUE1) AS TargetValue
+                                from KWH T1, dbo.TB_Line_Param T2, dbo.TB_APPLICATION_PARAM T3
+                                where T3.VALUE2 = @did and T1.did = @did and T2.LineCode = @did
+                                and T1.type = 'R'
+                                and DateDiff(dd, T1.dt, getdate()) = 0 and total > @total
+                                order by dt desc");
+                    opc.Clear();
+                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+                    opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
+                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetMeterKWHAlert";
+                    rm.Array = jArray;
+                });
 
+            }
+            catch (Exception ex)
+            {
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetMeterKWHAlert";
+            }
+            return rm;
         }
 
         /// <summary>
-        /// 智能電錶抓取總用電量 當天抓取昨日一天的總用電量
+        /// 抓取每天/每月的用電量 累計的數據
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
         public static string GetMeterKWH(SmartMeterKWH_Input Parameter)
         {
-            SqlConnection cn = new SqlConnection(conn);
-            cn.Open();
             StringBuilder sb = new StringBuilder();
-            sb.Append(@" select T3.Line, T1.did, SUM(convert(int,T1.total)) as ActValue, Convert(Float,T2.VALUE1) as TargetValue 
+            sb.Append(@" select T3.Line, T1.did, SUM(convert(int,T1.total)) as ActValue, Convert(int,T2.VALUE1) as TargetValue 
                          from dbo.KWH T1, TB_APPLICATION_PARAM T2, dbo.TB_Line_Param T3
                          where  T1.type = 'R' 
-                         and T2.PARAME_ITEM = 'upper'  AND T2.VALUE2 = @did and T1.did = @did and T3.LineCode = @did
-                          ");
+                         and T2.PARAME_ITEM = 'upper'  ");
+            sb.Append(" AND T2.VALUE2 = @VALUE2 and T1.did = @did and T3.LineCode = @LineCode");
             opc.Clear();
             switch (Parameter.functiontype)
             {
@@ -141,15 +161,24 @@ namespace API.Model
                     break;
             }
             sb.Append(" group by did, VALUE1, PARAME_NAME, Line");
-            DataTable dt = new DataTable();
-            using (SqlCommand cmd = new SqlCommand(sb.ToString(), cn))
+            switch (Parameter.did)
             {
-                cmd.Parameters.AddWithValue("@did", Parameter.did);
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    dt.Load(dr);
-                }
+                //OSD車間 
+                case "190160":
+                case "190161":
+                case "190174":
+                case "190175":
+                    opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, "190160"));
+                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+                    opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, "190160"));
+                    break;
+                default:
+                    opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, Parameter.did));
+                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+                    opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, Parameter.did));
+                    break;
             }
+            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
             return JsonConvert.SerializeObject(dt);
 
             //opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
@@ -158,20 +187,109 @@ namespace API.Model
 
         }
 
+        //public static async Task<SmartMeterKWH_Output> GetMeterKWH(SmartMeterKWH_Input Parameter)
+        //{
+        //    SmartMeterKWH_Output rm = new SmartMeterKWH_Output();
+
+        //    try
+        //    {
+        //        await Task.Run(() =>
+        //        {
+        //            StringBuilder sb = new StringBuilder();
+        //            sb.Append(@" select T3.Line, T1.did, SUM(convert(int,T1.total)) as ActValue, Convert(int,T2.VALUE1) as TargetValue 
+        //                 from dbo.KWH T1, TB_APPLICATION_PARAM T2, dbo.TB_Line_Param T3
+        //                 where  T1.type = 'R' 
+        //                 and T2.PARAME_ITEM = 'upper'  ");
+        //            sb.Append(" AND T2.VALUE2 = @VALUE2 and T1.did = @did and T3.LineCode = @LineCode");
+        //            opc.Clear();
+        //            switch (Parameter.functiontype)
+        //            {
+        //                case "Day":
+        //                    sb.Append(" and DateDiff(dd,dt,getdate())=0 and T2.VALUE5 = 'Day'");
+        //                    break;
+        //                case "Month":
+        //                    sb.Append(" and DateDiff(MM,dt,getdate())=0 and T2.VALUE5 = 'Month'");
+        //                    break;
+        //                default:
+        //                    sb.Append(" T1.did = ''");
+        //                    break;
+        //            }
+        //            sb.Append(" group by did, VALUE1, PARAME_NAME, Line");
+        //            switch (Parameter.did)
+        //            {
+        //                //OSD車間 
+        //                case "190160":
+        //                case "190161":
+        //                case "190174":
+        //                case "190175":
+        //                    opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, "190160"));
+        //                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+        //                    opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, "190160"));
+        //                    break;
+        //                default:
+        //                    opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, Parameter.did));
+        //                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+        //                    opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, Parameter.did));
+        //                    break;
+        //            }
+        //            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+        //            //WriteTraceLog.Error("Got Success");
+
+        //            JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+        //            rm.Success = true;
+        //            rm.Status = "success";
+        //            rm.Command = "GetMeterKWH";
+        //            rm.Array = jArray;
+        //        });
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //WriteTraceLog.Error("Got error. " + ex.Message);
+        //        rm.Success = false;
+        //        rm.Status = "Error";
+        //        rm.Command = "GetMeterKWH";
+        //    }
+        //    return rm;
+        //}
+
         /// <summary>
         /// 智能電錶抓取昨日一天的UTS數據 上午9:20左右 MES會把數據拋到DB中
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns></returns>
-        public static string GetMeterUTS(SmartMeterUTS_Input Parameter)
+        public static async Task<SmartMeterUTS_Output> GetMeterUTS(SmartMeterUTS_Input Parameter)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(@"select  PLANTNO,PRODUCTLINECODE, convert(varchar(10),GR_DATE,121) as GR_DATE,QTY from UTS where PRODUCTLINECODE = @PRODUCTLINECODE and PLANTNO = @PLANTNO   order by GR_DATE desc");
-            opc.Clear();
-            opc.Add(DataPara.CreateDataParameter("@PRODUCTLINECODE", SqlDbType.NVarChar, Parameter.PRODUCTLINECODE));
-            opc.Add(DataPara.CreateDataParameter("@PLANTNO", SqlDbType.NVarChar, Parameter.PLANTNO));
-            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-            return JsonConvert.SerializeObject(dt);
+            SmartMeterUTS_Output rm = new SmartMeterUTS_Output();
+            try
+            {
+                await Task.Run(() =>
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(@"select  PLANTNO,PRODUCTLINECODE, convert(varchar(10),GR_DATE,121) as GR_DATE,QTY from UTS where PRODUCTLINECODE = @PRODUCTLINECODE and PLANTNO = @PLANTNO   order by GR_DATE desc");
+                    opc.Clear();
+                    opc.Add(DataPara.CreateDataParameter("@PRODUCTLINECODE", SqlDbType.NVarChar, Parameter.PRODUCTLINECODE));
+                    opc.Add(DataPara.CreateDataParameter("@PLANTNO", SqlDbType.NVarChar, Parameter.PLANTNO));
+                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                    //WriteTraceLog.Error("Got Success");
+
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetMeterUTS";
+                    rm.Array = jArray;
+
+                });
+
+            }
+            catch (Exception ex)
+            {
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetMeterUTS";
+            }
+
+            return rm;
         }
 
 

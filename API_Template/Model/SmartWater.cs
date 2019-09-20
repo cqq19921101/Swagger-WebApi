@@ -9,12 +9,15 @@ using System.Configuration;
 using System.Text;
 using System.Collections;
 using Newtonsoft.Json;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace API.Model
 {
 
     #region 實例化
-    public class SmartWaterReal_Input
+    public class SmartWater_Input
     {
         public string did { get; set; }//南水錶:A1S  北水錶:A1N
 
@@ -22,25 +25,33 @@ namespace API.Model
 
     }
 
-    public class SmartWaterDay_Input
+    public class SmartWaterAlert_Input
     {
         public string did { get; set; }//南水錶:A1S  北水錶:A1N
-        public string functiontype { get; set; }//方法類型
     }
 
 
 
-    public class SmartWater_Output
+    public class SmartWater_Output : ReturnMessage
+    {
+        public string did { get; set; }//南水錶:A1S  北水錶:A1N
+        public string ActValue { get; set; }//實際值  累計的數據
+
+        public string TargetValue { get; set; }//上限值
+
+    }
+
+    public class SmartWaterAlert_Output : ReturnMessage
     {
         public string did { get; set; }//南水錶:A1S  北水錶:A1N
         public string type { get; set; }//Real:R  Day:D
         public string dt { get; set; }//抓取的日期 如2018-10-11
-        public string UPDATE_TIME { get; set; }//type:R -->顯示每小時 例:01:00:00 / type:D --顯示每天的日期 2018-10-11
-        public string totalA { get; set; }//用水量 水錶至今累計的用水量
-        public string total { get; set; }//用水量 時間段的用水量 按type區分
-        public string BU { get; set; }//BU   例：OPS
+        public string UPDATE_TIME { get; set; }//
+        public string ActValue { get; set; }//
+        public string TargetValue { get; set; }//上限值
 
     }
+
     #endregion
 
 
@@ -58,24 +69,60 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetWaterReal(SmartWaterReal_Input Parameter)
+        public static async Task<SmartWater_Output> GetWater(SmartWater_Input Parameter)
         {
-            int Limit = GetLimitReal();//上限值
-            StringBuilder sb = new StringBuilder();
-            sb.Append("select  did,type,  convert(varchar(16),dt,121) as dt,UPDATE_TIME,totalA,total,BU from Water where did = @did and type = 'R'   and DateDiff(dd,dt,getdate())=0 ");
-            opc.Clear();
-            switch (Parameter.functiontype.ToLower())
-            {
-                case "abnormal":
-                    sb.Append("and total > @total");
-                    opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
-                    break;
-            }
-            sb.Append(" order by UPDATE_TIME ");
-            opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-            DataTable dt =  sdb.GetDataTable(sb.ToString(), opc);
-            return JsonConvert.SerializeObject(dt);
+            SmartWater_Output rm = new SmartWater_Output();
 
+            try
+            {
+                await Task.Run(() =>
+                {
+                    SqlConnection cn = new SqlConnection(conn);
+                    cn.Open();
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(@" select T1.did,SUM(convert(int,T1.total)) as ActValue,Convert(int,T2.VALUE1) as TargetValue 
+                                 from dbo.[Water] T1,TB_APPLICATION_PARAM T2
+                                 where T1.type = 'R' 
+                                 and T2.PARAME_ITEM = 'upper'  AND T2.VALUE2 = 'A1' and T1.did = @did
+                                  ");
+                    opc.Clear();
+                    switch (Parameter.functiontype)
+                    {
+                        case "Day":
+                            sb.Append("  and DateDiff(dd,T1.dt,getdate())=0 and T2.VALUE5 = 'Day'");
+                            break;
+                        case "Month":
+                            sb.Append("  and DateDiff(dd,T1.dt,getdate())=0 and T2.VALUE5 = 'Month'");
+                            break;
+                        default:
+                            sb.Append(" T1.did = ''");
+                            break;
+                    }
+                    sb.Append(" group by VALUE1,did");
+                    DataTable dt = new DataTable();
+                    using (SqlCommand cmd = new SqlCommand(sb.ToString(), cn))
+                    {
+                        cmd.Parameters.AddWithValue("@did", Parameter.did);
+                        using (SqlDataReader dr = cmd.ExecuteReader())
+                        {
+                            dt.Load(dr);
+                        }
+                    }
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetWater";
+                    rm.Array = jArray;
+                });
+
+            }
+            catch (Exception ex)
+            {
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetWater";
+            }
+            return rm;
         }
 
         /// <summary>
@@ -83,25 +130,43 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static string GetWaterDay(SmartWaterDay_Input Parameter)
+        public static async Task<SmartWaterAlert_Output> GetWaterAlert(SmartWaterAlert_Input Parameter)
         {
-            int Limit = GetLimitDay();//上限值
-            StringBuilder sb = new StringBuilder();
-            sb.Append("select  did,type,  convert(varchar(16),dt,121) as dt,UPDATE_TIME,totalA,total,BU from Water where did = @did and type = 'D' and  DateDiff(dd,dt,getdate())=1    ");
-            opc.Clear();
-            switch (Parameter.functiontype.ToLower())
+            SmartWaterAlert_Output rm = new SmartWaterAlert_Output();
+
+            try
             {
-                case "abnormal":
-                    sb.Append("and total > @total");
+                await Task.Run(() =>
+                {
+                    int Limit = GetLimitDay();//上限值
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(@"select Top 1  T1.did, T1.type, convert(varchar(16), T1.dt, 121) as dt,T1.UPDATE_TIME, Convert(int,T1.total)  AS ActValue, 
+			            Convert(Float,T3.VALUE1) AS TargetValue
+                        from Water T1, dbo.TB_Line_Param T2, dbo.TB_APPLICATION_PARAM T3
+                        where T3.VALUE2 = 'A1' and T1.did = @did and T2.LineCode = @did
+                        and T1.type = 'R'
+                        and DateDiff(dd, T1.dt, getdate()) = 0 
+                        and total > @total
+                        order by dt desc ");
+                    opc.Clear();
+                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
                     opc.Add(DataPara.CreateDataParameter("@total", SqlDbType.Int, Limit));
-                    break;
+                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+                    rm.Success = true;
+                    rm.Status = "success";
+                    rm.Command = "GetWaterAlert";
+                    rm.Array = jArray;
+                });
+
             }
-
-            sb.Append(" order by UPDATE_TIME");
-            opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-            return JsonConvert.SerializeObject(dt);
-
+            catch (Exception ex)
+            {
+                rm.Success = false;
+                rm.Status = "Error";
+                rm.Command = "GetWaterAlert";
+            }
+            return rm;
         }
 
 

@@ -15,6 +15,7 @@ using System.Collections;
 using System.Web;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace API_Template.Controllers
 {
@@ -44,14 +45,17 @@ namespace API_Template.Controllers
             try
             {
                 Result = GetHC_Helper.GetHC_QueryLvData(item);
+                JArray jarray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = Result;
+                rm.Status = "success";
+                rm.Command = "GetHC_QueryLvData";
+                rm.Array = jarray;
             }
             catch (Exception ex)
             {
                 Log.Error("Got error. " + ex.Message);
                 rm.Success = false;
-                rm.Info = "Error";
+                rm.Status = "Error";
             }
 
             return rm;
@@ -61,102 +65,97 @@ namespace API_Template.Controllers
         /// <summary>
         /// QueryDLBuffer
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="para"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(GetHCDLBuffer_Input), typeof(InputExampleDLBuffer))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleDLBuffer))]
-        public ReturnMessage GetHC_QueryDLBuffer(GetHCDLBuffer_Input item)
-        {
-            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = "";
-            try
-            {
-                Result = GetHC_Helper.GetHC_QueryDLBuffer(item);
-                JArray jArray = JArray.Parse(Result);
-                rm.Success = true;
-                rm.Info = "Success";
-                rm.Array = jArray;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Got error. " + ex.Message);
-                rm.Success = false;
-                rm.Info = "Error";
-            }
-
-            return rm;
-        }
+        public async Task<IHttpActionResult> GetHC_QueryDLBuffer([FromBody] GetHCDLBuffer_Input para) => Ok(await GetHC_Helper.GetHC_DLBuffer(para));
 
 
         #endregion
 
         #region GetNSB
         /// <summary>
-        /// GetNSB
+        /// GetNSB  ----------> 異步處理 
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(GetNSB_Input), typeof(GetNSB_InputExample))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetNSB_OutputExample))]
-        public ReturnMessage GetNSB(GetNSB_Input item)
-        {
-            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-            string Result = string.Empty;
-            try
-            {
-                Result = GetNSB_Helper.GetNSB(item);
-                JArray jArray = JArray.Parse(Result);
-                rm.Success = true;
-                rm.Info = "Success";
-                rm.Array = jArray;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Got error. " + ex.Message);
-                rm.Success = false;
-                rm.Info = "Error";
-            }
+        public async Task<IHttpActionResult> GetNSB([FromBody]GetNSB_Input para) => Ok(await GetNSB_Helper.GetNSB(para));
+        //public ReturnMessage GetNSB(GetNSB_Input item)
+        //{
+        //    ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+        //    string Result = string.Empty;
+        //    try
+        //    {
+        //        Result = GetNSB_Helper.GetNSB(item);
+        //        JArray jArray = JArray.Parse(Result);
+        //        rm.Success = true;
+        //        rm.Status = "success";
+        //        rm.Command = "GetNSB";
+        //        rm.Array = jArray;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error("Got error. " + ex.Message);
+        //        rm.Success = false;
+        //        rm.Status = "Error";
+        //    }
 
 
-            return rm;
-        }
+        //    return rm;
+        //}
         #endregion
 
         #region GetNUB
         /// <summary>
-        /// GetNUB
+        /// GetNUB ----------> 異步處理 
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPost]
         [SwaggerRequestExample(typeof(GetNUB_Input), typeof(GetNUB_InputExample))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetNUB_OutputExample))]
-        public ReturnMessage GetNUB(GetNUB_Input item)
+        public async Task<IHttpActionResult> GetNUB([FromBody]GetNUB_Input para) => Ok(await GetNUB_Helper.GetNUB(para));
+
+        #endregion
+
+        #region GetTECO
+        /// <summary>
+        /// GetTECOYield
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [SwaggerRequestExample(typeof(TECO_Input), typeof(GetTECO_InputExample))]
+        [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetTECO_OutputExample))]
+        //public async Task<IHttpActionResult> GetTECO([FromBody] TECO_Input para) => Ok(await TECO_Helper.GetTECO(para));
+        public ReturnMessage GetTECO(TECO_Input item)
         {
             ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
             string Result = string.Empty;
             try
             {
-                Result = GetNUB_Helper.GetNUB(item);
+                Result = TECO_Helper.GetTECO(item);
                 JArray jArray = JArray.Parse(Result);
                 rm.Success = true;
-                rm.Info = "Success";
+                rm.Status = "success";
+                rm.Command = "GetTECO";
                 rm.Array = jArray;
             }
             catch (Exception ex)
             {
                 Log.Error("Got error. " + ex.Message);
                 rm.Success = false;
-                rm.Info = "Error";
+                rm.Status = "Error";
             }
 
             return rm;
         }
         #endregion
-
-
     }
 
 
@@ -311,6 +310,35 @@ namespace API_Template.Controllers
         }
     }
 
+    #endregion
+
+    #region GetTECO Example
+    public class GetTECO_InputExample : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new TECO_Input
+            {
+                PlantNo = "2301",
+                Line = "ALED"
+            };
+        }
+
+    }
+    public class GetTECO_OutputExample : IExamplesProvider
+    {
+        public object GetExamples()
+        {
+            return new TECO_Output
+            {
+                PlantNo = "2301",
+                Line = "ALED",
+                currentYield = "98%",
+                targetTield = "100%"
+            };
+
+        }
+    }
     #endregion
 
 }
