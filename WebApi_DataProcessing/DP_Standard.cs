@@ -84,10 +84,14 @@ namespace WebApi_DataProcessing
             sb.Append("select " + head.ToString().Replace("month", month));
             sb.Append(",to_char(\"Normal PO Input\",'FM99,999,999,999,999') as \"Normal PO Input\" ,");
             sb.Append("to_char(\"Net Output\",'FM99,999,999,999,999') as \"Net Output\",");
-            //sb.Append("to_char(\"Total Scrap\",'FM99,999,999,999,999')as \"Total Scrap\" ,");
-            //sb.Append("to_char(Bonus,'FM99,999,999,999,999')as \"Bonus\" ,");
-            sb.Append("case when \"Net Output\" <= 0 or \"Normal PO Input\" <= 0 then '0' else to_char(round((\"Net Output\" / \"Normal PO Input\"), 4) * 100) || '%'  end as \"T-Yield\" ");
-            //sb.Append(",month as month2 ");
+            if (description.ToUpper() == "ALL.")
+            {
+                sb.Append("case when \"Net Output\" <= 0 or \"Normal PO Input\" <= 0 then '0' else to_char(round((\"Net Output\" / \"Normal PO Input\"), 4) * 10000)   end as \"T-Yield\" ");
+            }
+            else
+            {
+                sb.Append("case when \"Net Output\" <= 0 or \"Normal PO Input\" <= 0 then '99999' else to_char(round((\"Net Output\" / \"Normal PO Input\"), 4) * 10000)   end as \"T-Yield\" ");
+            }
             sb.Append("from ( select " + head.ToString() + ", ");
             sb.Append("sum(case when ordertype='ZO01' then grqty_101 + grqty_531 + scrapqty else 0 end) as \"Normal PO Input\" ,");
             sb.Append("(sum(case when ordertype in ('ZO01','ZO06') then grqty_101+ grqty_531  else 0 end) -");
@@ -101,7 +105,11 @@ namespace WebApi_DataProcessing
 
             sb.Append("sum(case when ordertype='ZO06' then grqty_101 + grqty_531+scrapqty  else 0 end) as \"BonusPOInput\",");
             sb.Append("sum(case when ordertype='ZO06' then grqty_101 + grqty_531  else 0 end) as \"BonusPOOutput\" ");
-            sb.Append("from ledoaydatatecoyield o where o.year='" + year + "'  and  o.plantno='" + plantno + "' and o.tecodate < '" + nowTime.ToString("yyyyMMdd") + "' and description='" + description + "' and o.ordertype not in('ZO04','ZO05') ");
+            sb.Append("from ledoaydatatecoyield o where o.year='" + year + "'  and  o.plantno='" + plantno + "' and o.tecodate < '" + nowTime.ToString("yyyyMMdd") + "' ");
+            if (description.ToUpper() != "ALL.")
+            {
+                sb.Append("  and description='" + description + "' and o.ordertype not in('ZO04','ZO05') ");
+            }
             //sb.Append("from ledoaydatatecoyield_eai2 o where o.year='" + year + "'  and  plantno='" + plantno + "' and description='" + description + "' and o.ordertype not in('ZO04','ZO05') ");
             sb.Append("and upper(nvl(series1,' ')) like  decode(upper('" + series1 + "'),'*','%',upper('" + series1 + "')) ");
             sb.Append("and upper(nvl(series2,' ')) like  decode(upper('" + series2 + "'),'*','%',upper('" + series2 + "')) ");
@@ -111,7 +119,22 @@ namespace WebApi_DataProcessing
             sb.Append(" )order by month desc");
             string sqlBuilder = sb.ToString().Replace("'", "''");
             StringBuilder sql = new StringBuilder();
-            sql.Append("select Top 1 *, '100%' as targetvalue from openquery(MESDB12," + "'" + sqlBuilder + "') ");
+            if (description.ToUpper() == "ALL.")
+            {
+                sql.Append("select Top 1 T1.[YEAR],T1.[MONTH],'ALL' as 'DESCRIPTION' ,");
+                sql.Append("  SUM(Convert(bigint, REPLACE(T1.[Net Output], ',', ''))) as 'NetOutput',");
+                sql.Append("  SUM(Convert(bigint, REPLACE(T1.[Normal PO Input], ',', ''))) as 'NormalPOInput',");
+                sql.Append("  Convert(int,cast(SUM(Convert(float, REPLACE(T1.[Net Output], ',', ''))) / SUM(Convert(float, REPLACE(T1.[Normal PO Input], ',', ''))) as decimal(18, 4)) * 10000)  as 'currentTECO',");
+                sql.Append(" 10000 as targetTECO");
+                sql.Append(" from openquery(MESDB12," + "'" + sqlBuilder + "') T1");
+                sql.Append(" group by T1.[YEAR],T1.[MONTH]");
+                sql.Append(" order by MONTH DESC");
+            }
+            else
+            {
+                sql.Append("select Top 1 T1.[YEAR],T1.[MONTH],T1.[DESCRIPTION],Convert(int,T1.[T-Yield]) as 'currentTECO', 10000 as targetTECO  from openquery(MESDB12," + "'" + sqlBuilder + "') T1 ");
+            }
+
             //DataTable dt = DataBase.SqlToTable(sb.ToString());
             DataTable dt = sdb.GetDataTable(sql.ToString(), opc);
             return dt;
