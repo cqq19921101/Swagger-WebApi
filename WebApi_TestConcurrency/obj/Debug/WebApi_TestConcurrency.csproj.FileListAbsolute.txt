@@ -3,3 +3,5 @@ D:\WORKSHOP\swagger-webapi\WebApi_TestConcurrency\bin\Debug\WebApi_TestConcurren
 D:\WORKSHOP\swagger-webapi\WebApi_TestConcurrency\bin\Debug\WebApi_TestConcurrency.pdb
 D:\WORKSHOP\swagger-webapi\WebApi_TestConcurrency\obj\Debug\WebApi_TestConcurrency.exe
 D:\WORKSHOP\swagger-webapi\WebApi_TestConcurrency\obj\Debug\WebApi_TestConcurrency.pdb
+D:\Workshop\Swagger-WebApi\WebApi_TestConcurrency\obj\Debug\WebApi_TestConcurrency.csprojAssemblyReference.cache
+D:\Workshop\Swagger-WebApi\WebApi_TestConcurrency\obj\Debug\WebApi_TestConcurrency.csproj.CoreCompileInputs.cache

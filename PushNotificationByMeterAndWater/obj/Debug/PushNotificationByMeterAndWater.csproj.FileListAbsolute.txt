@@ -1,0 +1,8 @@
+D:\WORKSHOP\swagger-webapi\PushNotificationByMeterAndWater\bin\Debug\PushNotificationByMeterAndWater.exe.config
+D:\WORKSHOP\swagger-webapi\PushNotificationByMeterAndWater\bin\Debug\PushNotificationByMeterAndWater.exe
+D:\WORKSHOP\swagger-webapi\PushNotificationByMeterAndWater\bin\Debug\PushNotificationByMeterAndWater.pdb
+D:\WORKSHOP\swagger-webapi\PushNotificationByMeterAndWater\obj\Debug\PushNotificationByMeterAndWater.exe
+D:\WORKSHOP\swagger-webapi\PushNotificationByMeterAndWater\obj\Debug\PushNotificationByMeterAndWater.pdb
+D:\Workshop\Swagger-WebApi\PushNotificationByMeterAndWater\obj\Debug\PushNotificationByMeterAndWater.csprojAssemblyReference.cache
+D:\Workshop\Swagger-WebApi\PushNotificationByMeterAndWater\obj\Debug\PushNotificationByMeterAndWater.csproj.CoreCompileInputs.cache
+D:\Workshop\Swagger-WebApi\PushNotificationByMeterAndWater\obj\Debug\PushNotificationByMeterAndWater.csproj.CopyComplete

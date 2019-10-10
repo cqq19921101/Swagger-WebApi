@@ -58,12 +58,17 @@ D:\WORKSHOP\swagger-webapi\API_Template\bin\API_Template.dll
 D:\WORKSHOP\swagger-webapi\API_Template\bin\API_Template.pdb
 D:\WORKSHOP\swagger-webapi\API_Template\bin\log4net.dll
 D:\WORKSHOP\swagger-webapi\API_Template\bin\Microsoft.ApplicationInsights.dll
+D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_CacheHelper.dll
 D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_DataProcessing.dll
 D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_WriteTraceLog.dll
+D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_CacheHelper.pdb
 D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_DataProcessing.pdb
 D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_WriteTraceLog.pdb
 D:\WORKSHOP\swagger-webapi\API_Template\bin\log4net.xml
 D:\WORKSHOP\swagger-webapi\API_Template\bin\Microsoft.ApplicationInsights.xml
-D:\WORKSHOP\swagger-webapi\API_Template\obj\Debug\LiteOn API.csprojResolveAssemblyReference.cache
 D:\WORKSHOP\swagger-webapi\API_Template\obj\Debug\API_Template.dll
 D:\WORKSHOP\swagger-webapi\API_Template\obj\Debug\API_Template.pdb
+D:\Workshop\Swagger-WebApi\API_Template\bin\WebApi_WriteTraceLog.dll.config
+D:\Workshop\Swagger-WebApi\API_Template\obj\Debug\LiteOn API.csprojAssemblyReference.cache
+D:\Workshop\Swagger-WebApi\API_Template\obj\Debug\LiteOn API.csproj.CoreCompileInputs.cache
+D:\Workshop\Swagger-WebApi\API_Template\obj\Debug\LiteOn API.csproj.CopyComplete

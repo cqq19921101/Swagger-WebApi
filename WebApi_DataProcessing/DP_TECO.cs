@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebApi_CacheHelper;
 
 namespace WebApi_DataProcessing
 {
@@ -18,8 +19,7 @@ namespace WebApi_DataProcessing
         /// <returns></returns>
         public override DataTable ReturnTECOByCZOPS(string PlantNo,string LineCode)
         {
-            return ComputeTecoYield(PlantNo, LineCode, DateTime.Now);
-            //return null;
+                return ComputeTecoYield(PlantNo, LineCode, DateTime.Now); 
         }
 
 

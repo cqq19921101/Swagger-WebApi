@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi_DataProcessing", "We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi_TestConcurrency", "WebApi_TestConcurrency\WebApi_TestConcurrency.csproj", "{3703A29B-6E88-4BC6-8C3A-EF92E180DE1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi_CacheHelper", "WebApi_CacheHelper\WebApi_CacheHelper.csproj", "{692CF19D-5045-4809-ADB6-E8A1097EE3AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationByMeterAndWater", "PushNotificationByMeterAndWater\PushNotificationByMeterAndWater.csproj", "{331BC9A8-82C8-45BB-A67F-D6892684419A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{3703A29B-6E88-4BC6-8C3A-EF92E180DE1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3703A29B-6E88-4BC6-8C3A-EF92E180DE1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3703A29B-6E88-4BC6-8C3A-EF92E180DE1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{692CF19D-5045-4809-ADB6-E8A1097EE3AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{692CF19D-5045-4809-ADB6-E8A1097EE3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{692CF19D-5045-4809-ADB6-E8A1097EE3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{692CF19D-5045-4809-ADB6-E8A1097EE3AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{331BC9A8-82C8-45BB-A67F-D6892684419A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{331BC9A8-82C8-45BB-A67F-D6892684419A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{331BC9A8-82C8-45BB-A67F-D6892684419A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{331BC9A8-82C8-45BB-A67F-D6892684419A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

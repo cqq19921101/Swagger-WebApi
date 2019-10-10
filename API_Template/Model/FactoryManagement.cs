@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using WebApi_DataProcessing;
 using Newtonsoft.Json.Linq;
 using WebApi_WriteTraceLog;
+using WebApi_CacheHelper;
 
 namespace API.Model
 {
@@ -121,36 +122,30 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static async Task<GetHCDLBuffer_Output> GetHC_DLBuffer(GetHCDLBuffer_Input Parameter)
+        public static string GetHC_QueryDLBuffer(GetHCDLBuffer_Input Parameter)
         {
-            GetHCDLBuffer_Output rm = new GetHCDLBuffer_Output();
-
-            try
+            string Time = Cache_Helper.CheckIsExistByCache("GetHC_DLBuffer", Parameter.BU, Parameter.DEPT_ID);
+            if (!string.IsNullOrEmpty(Time) && DateTime.Compare(DateTime.Now, DateTime.Parse(Time)) < 0) //存在缓存则抓取缓存中的数据
             {
-                await Task.Run(() =>
-                {
-                    opc.Clear();
-                    string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
-                    opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
-                    opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
-                    opc.Add(DataPara.CreateProcParameter("@P_DEPTID", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.DEPT_ID));
-                    DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer_API", opc);
-                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
-                    rm.Success = true;
-                    rm.Status = "success";
-                    rm.Command = "GetNUB";
-                    rm.Array = jArray;
-                });
+                DataTable dt = Cache_Helper.GetAPICache("GetHC_DLBuffer", Parameter.BU, Parameter.DEPT_ID);
+                DataRow dr = dt.Rows[0];
+                //string Update_Time = dr["Update_Time"].ToString();//缓存中的时间
+                string JsonResult = dr["Value3"].ToString();
 
+                return JsonResult;
+            }
+            else
+            {
+                opc.Clear();
+                string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+                opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
+                opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
+                opc.Add(DataPara.CreateProcParameter("@P_DEPTID", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.DEPT_ID));
+                DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer_API", opc);
+                Cache_Helper.InsertCacheData("GetHC_DLBuffer", Parameter.BU, Parameter.DEPT_ID, JsonConvert.SerializeObject(dt), DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") + " 16:00:00");
+                return JsonConvert.SerializeObject(dt);
 
             }
-            catch (Exception ex)
-            {
-                rm.Success = false;
-                rm.Status = "Error";
-                rm.Command = "GetNUB";
-            }
-            return rm;
         }
 
 
@@ -193,60 +188,108 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>Datatable 轉 Json</returns>
-        public static async Task<GetNSB_Output> GetNSB(GetNSB_Input Parameter)
+        public static string GetNSB(GetNSB_Input Parameter)
         {
-            GetNSB_Output rm = new GetNSB_Output();
-
-            try
+            string Time = Cache_Helper.CheckIsExistByCache("GetNSB", Parameter.WERKS, Parameter.PRODH);
+            if (!string.IsNullOrEmpty(Time) && DateTime.Compare(DateTime.Now,DateTime.Parse(Time)) < 0 ) //存在缓存则抓取缓存中的数据
             {
-                await Task.Run(() =>
-                {
-                    StringBuilder sb = new StringBuilder();
+                DataTable dt = Cache_Helper.GetAPICache("GetNSB", Parameter.WERKS, Parameter.PRODH);
+                DataRow dr = dt.Rows[0];
+                //string Update_Time = dr["Update_Time"].ToString();//缓存中的时间
+                string JsonResult = dr["Value3"].ToString();
 
-                    switch (Parameter.PRODH.ToUpper())
-                    {
-                        case "ALL":
-                            sb.Append(@"
-                                        SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.NETWR)) as currentNSB, 
-                                        Convert(bigint,T2.LineCode) as targetNSB
-                                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-                                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
-                                        and T2.Line = 'NSB' AND  T2.Value1 = 'ALL'
-                                        group by T2.LineCode,T1.SPMON");
-                            opc.Clear();
-                            break;
-                        default:
-                            sb.Append(@"SELECT T1.SPMON, T1.PRODH,Sum(convert(bigint,T1.NETWR)) as currentNSB, Convert(bigint,T2.LineCode) as targetNSB
+                return JsonResult;
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+
+                switch (Parameter.PRODH.ToUpper())
+                {
+                    case "ALL":
+                        sb.Append(@"
+                                SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.NETWR)) as currentNSB, 
+                                Convert(bigint,T2.LineCode) as targetNSB
                                 FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
                                 where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
-                                and T2.Line = 'NSB'  and T2.Value1 = @PRODH
-                                ");
-                            opc.Clear();
-                            sb.Append(" and T1.PRODH = @PRODH");
-                            sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
-                            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-                            break;
-                    }
-                    opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
-                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
-                    rm.Success = true;
-                    rm.Status = "success";
-                    rm.Command = "GetNSB";
-                    rm.Array = jArray;
-                });
-
+                                and T2.Line = 'NSB' AND  T2.Value1 = 'ALL'
+                                group by T2.LineCode,T1.SPMON");
+                        opc.Clear();
+                        break;
+                    default:
+                        sb.Append(@"SELECT T1.SPMON, T1.PRODH,Sum(convert(bigint,T1.NETWR)) as currentNSB, Convert(bigint,T2.LineCode) as targetNSB
+                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                        and T2.Line = 'NSB'  and T2.Value1 = @PRODH
+                        ");
+                        opc.Clear();
+                        sb.Append(" and T1.PRODH = @PRODH");
+                        sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
+                        opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+                        break;
+                }
+                opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
+                DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                Cache_Helper.InsertCacheData("GetNSB", Parameter.WERKS, Parameter.PRODH, JsonConvert.SerializeObject(dt), DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") + " 02:30:00");
+                return JsonConvert.SerializeObject(dt);
             }
-            catch (Exception ex)
-            {
 
-                //WriteTraceLog.Info("GetNSB 無資料！");
-                rm.Success = false;
-                rm.Status = "Error";
-                rm.Command = "GetNSB";
-            }
-            return rm;
         }
+
+        //public static async Task<GetNSB_Output> GetNSB(GetNSB_Input Parameter)
+        //{
+        //    GetNSB_Output rm = new GetNSB_Output();
+
+        //    try
+        //    {
+        //        await Task.Run(() =>
+        //        {
+        //            StringBuilder sb = new StringBuilder();
+
+        //            switch (Parameter.PRODH.ToUpper())
+        //            {
+        //                case "ALL":
+        //                    sb.Append(@"
+        //                                SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.NETWR)) as currentNSB, 
+        //                                Convert(bigint,T2.LineCode) as targetNSB
+        //                                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+        //                                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+        //                                and T2.Line = 'NSB' AND  T2.Value1 = 'ALL'
+        //                                group by T2.LineCode,T1.SPMON");
+        //                    opc.Clear();
+        //                    break;
+        //                default:
+        //                    sb.Append(@"SELECT T1.SPMON, T1.PRODH,Sum(convert(bigint,T1.NETWR)) as currentNSB, Convert(bigint,T2.LineCode) as targetNSB
+        //                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+        //                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+        //                        and T2.Line = 'NSB'  and T2.Value1 = @PRODH
+        //                        ");
+        //                    opc.Clear();
+        //                    sb.Append(" and T1.PRODH = @PRODH");
+        //                    sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
+        //                    opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+        //                    break;
+        //            }
+        //            opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
+        //            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+        //            JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+        //            rm.Success = true;
+        //            rm.Status = "success";
+        //            rm.Command = "GetNSB";
+        //            rm.Array = jArray;
+        //        });
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        //WriteTraceLog.Info("GetNSB 無資料！");
+        //        rm.Success = false;
+        //        rm.Status = "Error";
+        //        rm.Command = "GetNSB";
+        //    }
+        //    return rm;
+        //}
 
 
 
@@ -287,38 +330,53 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns>string 轉 Json</returns>
-        //public static string GetNUB(GetNUB_Input Parameter)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    switch (Parameter.PRODH.ToUpper())
-        //    {
-        //        case "ALL":
-        //            sb.Append(@"
-        //                        SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, 
-        //                        Convert(bigint,T2.LineCode) as targetNUB
-        //                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-        //                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
-        //                        and T2.Line = 'NUB'  and T2.Value1 = 'ALL'
-        //                        group by T2.LineCode,T1.SPMON");
-        //            opc.Clear();
-        //            break;
-        //        default:
-        //            sb.Append(@"SELECT T1.SPMON, T1.PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, Convert(bigint,T2.LineCode) as targetNUB
-        //                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-        //                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
-        //                and T2.Line = 'NUB'  and T2.Value1 = @PRODH
-        //                ");
-        //            sb.Append(" and T1.PRODH = @PRODH");
-        //            sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
-        //            opc.Clear();
-        //            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
-        //            break;
-        //    }
-        //    opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
-        //    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-        //    return JsonConvert.SerializeObject(dt);
+        public static string GetNUB(GetNUB_Input Parameter)
+        {
+            string Time = Cache_Helper.CheckIsExistByCache("GetNUB", Parameter.WERKS, Parameter.PRODH);
+            if (!string.IsNullOrEmpty(Time) && DateTime.Compare(DateTime.Now, DateTime.Parse(Time)) < 0) //存在缓存则抓取缓存中的数据
+            {
+                DataTable dt = Cache_Helper.GetAPICache("GetNUB", Parameter.WERKS, Parameter.PRODH);
+                DataRow dr = dt.Rows[0];
+                //string Update_Time = dr["Update_Time"].ToString();//缓存中的时间
+                string JsonResult = dr["Value3"].ToString();
 
-        //}
+                return JsonResult;
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                switch (Parameter.PRODH.ToUpper())
+                {
+                    case "ALL":
+                        sb.Append(@"
+                                SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, 
+                                Convert(bigint,T2.LineCode) as targetNUB
+                                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                                and T2.Line = 'NUB'  and T2.Value1 = 'ALL'
+                                group by T2.LineCode,T1.SPMON");
+                        opc.Clear();
+                        break;
+                    default:
+                        sb.Append(@"SELECT T1.SPMON, T1.PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, Convert(bigint,T2.LineCode) as targetNUB
+                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+                        and T2.Line = 'NUB'  and T2.Value1 = @PRODH
+                        ");
+                        sb.Append(" and T1.PRODH = @PRODH");
+                        sb.Append(" Group by T2.LineCode,T1.SPMON,T1.PRODH");
+                        opc.Clear();
+                        opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Parameter.PRODH));
+                        break;
+                }
+                opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Parameter.WERKS));
+                DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                Cache_Helper.InsertCacheData("GetNUB", Parameter.WERKS, Parameter.PRODH, JsonConvert.SerializeObject(dt), DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") + " 02:30:00");
+                return JsonConvert.SerializeObject(dt);
+            }
+
+
+        }
 
 
         /// <summary>
@@ -326,61 +384,61 @@ namespace API.Model
         /// </summary>
         /// <param name="Para"></param>
         /// <returns></returns>
-        public static async Task<GetNUB_Output> GetNUB(GetNUB_Input Para)
-        {
-            GetNUB_Output rm = new GetNUB_Output();
+        //public static async Task<GetNUB_Output> GetNUB(GetNUB_Input Para)
+        //{
+        //    GetNUB_Output rm = new GetNUB_Output();
 
-            try
-            {
-                await Task.Run(() =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    switch (Para.PRODH.ToUpper())
-                    {
-                        case "ALL":
-                            sb.Append(@"
-                                        SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, 
-                                        Convert(bigint,T2.LineCode) as targetNUB
-                                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-                                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
-                                        and T2.Line = 'NUB' AND  T2.Value1 = 'ALL'
-                                        group by T2.LineCode,T1.SPMON");
-                            opc.Clear();
-                            break;
-                        default:
-                            sb.Append(@"SELECT T1.SPMON, T1.PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, Convert(bigint,T2.LineCode) as targetNUB
-                                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
-                                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
-                                and T2.Line = 'NUB' and T2.Value1 = @PRODH
-                                ");
-                            sb.Append(" and T1.PRODH = @PRODH");
-                            sb.Append("     group by T2.LineCode,T1.SPMON,T1.PRODH");
-                            opc.Clear();
-                            opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Para.PRODH));
-                            break;
-                    }
-                    opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Para.WERKS));
-                    DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-                    JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
-                    rm.Success = true;
-                    rm.Status = "success";
-                    rm.Command = "GetNUB";
-                    rm.Array = jArray;
+        //    try
+        //    {
+        //            await Task.Run(() =>
+        //        {
+        //            StringBuilder sb = new StringBuilder();
+        //            switch (Para.PRODH.ToUpper())
+        //            {
+        //                case "ALL":
+        //                    sb.Append(@"
+        //                                SELECT T1.SPMON,'ALL' AS PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, 
+        //                                Convert(bigint,T2.LineCode) as targetNUB
+        //                                FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+        //                                where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+        //                                and T2.Line = 'NUB' AND  T2.Value1 = 'ALL'
+        //                                group by T2.LineCode,T1.SPMON");
+        //                    opc.Clear();
+        //                    break;
+        //                default:
+        //                    sb.Append(@"SELECT T1.SPMON, T1.PRODH, Sum(convert(bigint,T1.FKIMG)) as currentNUB, Convert(bigint,T2.LineCode) as targetNUB
+        //                        FROM [SAPTEST].[dbo].[ZTVDSS913] T1,ICM657.GreenPower.dbo.TB_Line_Param T2
+        //                        where  T1.SPMON = REPLACE(convert(varchar(7),GETDATE(),121),'-','') and T1.WERKS = @WERKS
+        //                        and T2.Line = 'NUB' and T2.Value1 = @PRODH
+        //                        ");
+        //                    sb.Append(" and T1.PRODH = @PRODH");
+        //                    sb.Append("     group by T2.LineCode,T1.SPMON,T1.PRODH");
+        //                    opc.Clear();
+        //                    opc.Add(DataPara.CreateDataParameter("@PRODH", SqlDbType.NVarChar, Para.PRODH));
+        //                    break;
+        //            }
+        //            opc.Add(DataPara.CreateDataParameter("@WERKS", SqlDbType.NVarChar, Para.WERKS));
+        //            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+        //            JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+        //            rm.Success = true;
+        //            rm.Status = "success";
+        //            rm.Command = "GetNUB";
+        //            rm.Array = jArray;
 
-                });
+        //        });
 
-            }
-            catch (Exception ex)
-            {
-                //WriteTraceLog.Info("GetNUB 無資料！");
-                rm.Success = false;
-                rm.Status = "Error";
-                rm.Command = "GetNUB";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //WriteTraceLog.Info("GetNUB 無資料！");
+        //        rm.Success = false;
+        //        rm.Status = "Error";
+        //        rm.Command = "GetNUB";
 
-            }
+        //    }
 
-            return rm;
-        }
+        //    return rm;
+        //}
 
     }
 
@@ -409,11 +467,26 @@ namespace API.Model
         /// </summary>
         /// <param name="Parameter"></param>
         /// <returns></returns>
-        public static string  GetTECO(TECO_Input Parameter)
+        public static string GetTECO(TECO_Input Parameter)
         {
-            var FuncTeco = new DP_TECO();
-            return JsonConvert.SerializeObject(FuncTeco.ReturnTECOByCZOPS(Parameter.PlantNo, Parameter.Line));
+            string Time = Cache_Helper.CheckIsExistByCache("GetTECO", Parameter.PlantNo, Parameter.Line);
+            if (!string.IsNullOrEmpty(Time) && DateTime.Compare(DateTime.Now, DateTime.Parse(Time)) < 0) //存在缓存则抓取缓存中的数据
+            {
+                DataTable dt = Cache_Helper.GetAPICache("GetTECO", Parameter.PlantNo, Parameter.Line);
+                DataRow dr = dt.Rows[0];
+                //string Update_Time = dr["Update_Time"].ToString();//缓存中的时间
+                string JsonResult = dr["Value3"].ToString();
+                
+                return JsonResult;
+            }
+            else
+            {
+                var FuncTeco = new DP_TECO();
+                DataTable dt = FuncTeco.ReturnTECOByCZOPS(Parameter.PlantNo, Parameter.Line);
+                Cache_Helper.InsertCacheData("GetTECO", Parameter.PlantNo, Parameter.Line, JsonConvert.SerializeObject(dt),DateTime.Now.AddDays(1).ToString("yyyy-MM-dd") + " 07:00:00");
+                return JsonConvert.SerializeObject(dt);
 
+            }
         }
 
 

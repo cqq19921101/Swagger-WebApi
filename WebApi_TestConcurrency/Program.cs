@@ -11,14 +11,15 @@ namespace WebApi_TestConcurrency
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("測試 WebAPI:http://localhost:8088/CZAPI/liteonApi/SmartMeter/GetMeterKWH");
-            Console.Write("輸入線程數:");
-            int threadNum = 100;
-            int.TryParse(Console.ReadLine(), out threadNum);
-            while (Test(threadNum)) ;
+            //Console.WriteLine("測試 WebAPI:http://localhost:8088/CZAPI/liteonApi/SmartMeter/GetMeterKWH");
+            //Console.Write("輸入線程數:");
+            //int threadNum = 100;
+            //int.TryParse(Console.ReadLine(), out threadNum);
+            //while (Test(threadNum)) ;
 
-            Console.ReadLine();
-            Console.ReadLine();
+            //Console.ReadLine();
+            //Console.ReadLine();
+
         }
 
         private static bool Test(int TaskNumber)

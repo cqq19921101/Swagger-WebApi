@@ -1,0 +1,9 @@
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Debug\WebApi_CacheHelper.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Debug\WebApi_CacheHelper.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Debug\LiteOn.EA.DAL.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Debug\LiteOn.Corp.IT.EA.CMCC.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\obj\Debug\WebApi_CacheHelper.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\obj\Debug\WebApi_CacheHelper.pdb
+D:\Workshop\Swagger-WebApi\WebApi_CacheHelper\obj\Debug\WebApi_CacheHelper.csprojAssemblyReference.cache
+D:\Workshop\Swagger-WebApi\WebApi_CacheHelper\obj\Debug\WebApi_CacheHelper.csproj.CoreCompileInputs.cache
+D:\Workshop\Swagger-WebApi\WebApi_CacheHelper\obj\Debug\WebApi_CacheHelper.csproj.CopyComplete

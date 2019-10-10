@@ -70,7 +70,30 @@ namespace API_Template.Controllers
         [HttpPost]
         [SwaggerRequestExample(typeof(GetHCDLBuffer_Input), typeof(InputExampleDLBuffer))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(OutputExampleDLBuffer))]
-        public async Task<IHttpActionResult> GetHC_QueryDLBuffer([FromBody] GetHCDLBuffer_Input para) => Ok(await GetHC_Helper.GetHC_DLBuffer(para));
+        public ReturnMessage GetHC_QueryDLBuffer(GetHCDLBuffer_Input item)
+        {
+            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+            string Result = "";
+            try
+            {
+                Result = GetHC_Helper.GetHC_QueryDLBuffer(item);
+                JArray jArray = JArray.Parse(Result);
+                rm.Success = true;
+                rm.Status = "success";
+                rm.Command = "GetHC_QueryDLBuffer";
+                rm.Array = jArray;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Got error. " + ex.Message);
+                rm.Success = false;
+                rm.Status = "Error";
+            }
+
+            return rm;
+        }
+
+        //public async Task<IHttpActionResult> GetHC_QueryDLBuffer([FromBody] GetHCDLBuffer_Input para) => Ok(await GetHC_Helper.GetHC_DLBuffer(para));
 
 
         #endregion
@@ -84,30 +107,30 @@ namespace API_Template.Controllers
         [HttpPost]
         [SwaggerRequestExample(typeof(GetNSB_Input), typeof(GetNSB_InputExample))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetNSB_OutputExample))]
-        public async Task<IHttpActionResult> GetNSB([FromBody]GetNSB_Input para) => Ok(await GetNSB_Helper.GetNSB(para));
-        //public ReturnMessage GetNSB(GetNSB_Input item)
-        //{
-        //    ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
-        //    string Result = string.Empty;
-        //    try
-        //    {
-        //        Result = GetNSB_Helper.GetNSB(item);
-        //        JArray jArray = JArray.Parse(Result);
-        //        rm.Success = true;
-        //        rm.Status = "success";
-        //        rm.Command = "GetNSB";
-        //        rm.Array = jArray;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Log.Error("Got error. " + ex.Message);
-        //        rm.Success = false;
-        //        rm.Status = "Error";
-        //    }
+        //public async Task<IHttpActionResult> GetNSB([FromBody]GetNSB_Input para) => Ok(await GetNSB_Helper.GetNSB(para));
+        public ReturnMessage GetNSB(GetNSB_Input item)
+        {
+            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+            string Result = string.Empty;
+            try
+            {
+                Result = GetNSB_Helper.GetNSB(item);
+                JArray jArray = JArray.Parse(Result);
+                rm.Success = true;
+                rm.Status = "success";
+                rm.Command = "GetNSB";
+                rm.Array = jArray;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Got error. " + ex.Message);
+                rm.Success = false;
+                rm.Status = "Error";
+            }
 
 
-        //    return rm;
-        //}
+            return rm;
+        }
         #endregion
 
         #region GetNUB
@@ -119,7 +142,30 @@ namespace API_Template.Controllers
         [HttpPost]
         [SwaggerRequestExample(typeof(GetNUB_Input), typeof(GetNUB_InputExample))]
         [SwaggerResponseExample(HttpStatusCode.OK, typeof(GetNUB_OutputExample))]
-        public async Task<IHttpActionResult> GetNUB([FromBody]GetNUB_Input para) => Ok(await GetNUB_Helper.GetNUB(para));
+        //public async Task<IHttpActionResult> GetNUB([FromBody]GetNUB_Input para) => Ok(await GetNUB_Helper.GetNUB(para));
+        public  ReturnMessage GetNUB(GetNUB_Input item)
+        {
+            ReturnMessage rm = new ReturnMessage();//new 一個返回的請求狀態類
+            string Result = string.Empty;
+            try
+            {
+                Result = GetNUB_Helper.GetNUB(item);
+                JArray jArray = JArray.Parse(Result);
+                rm.Success = true;
+                rm.Status = "success";
+                rm.Command = "GetNUB";
+                rm.Array = jArray;
+            }
+            catch (Exception ex)
+            {
+                
+                Log.Error("Got error. " + ex.Message);
+                rm.Success = false;
+                rm.Status = "Error";
+            }
+
+            return rm;
+        }
 
         #endregion
 

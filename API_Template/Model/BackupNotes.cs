@@ -285,6 +285,38 @@ namespace API_Template.Model
     //    return rm;
     //}
 
+    //public static async Task<GetHCDLBuffer_Output> GetHC_DLBuffer(GetHCDLBuffer_Input Parameter)
+    //{
+    //    GetHCDLBuffer_Output rm = new GetHCDLBuffer_Output();
+
+    //    try
+    //    {
+    //        await Task.Run(() =>
+    //        {
+    //            opc.Clear();
+    //            string Date = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+    //            opc.Add(DataPara.CreateProcParameter("@P_BU", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.BU));
+    //            opc.Add(DataPara.CreateProcParameter("@P_DATE", SqlDbType.VarChar, 10, ParameterDirection.Input, Date));
+    //            opc.Add(DataPara.CreateProcParameter("@P_DEPTID", SqlDbType.VarChar, 10, ParameterDirection.Input, Parameter.DEPT_ID));
+    //            DataTable dt = sdb.RunProc2("P_DailyReprot_QueryDLBuffer_API", opc);
+    //            JArray jArray = JArray.Parse(JsonConvert.SerializeObject(dt));
+    //            rm.Success = true;
+    //            rm.Status = "success";
+    //            rm.Command = "GetHC";
+    //            rm.Array = jArray;
+    //        });
+
+
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        rm.Success = false;
+    //        rm.Status = "Error";
+    //        rm.Command = "GetHC";
+    //    }
+    //    return rm;
+    //}
+
     #endregion
 
 }

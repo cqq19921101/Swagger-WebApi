@@ -92,7 +92,7 @@ namespace API.Model
                             sb.Append("  and DateDiff(dd,T1.dt,getdate())=0 and T2.VALUE5 = 'Day'");
                             break;
                         case "Month":
-                            sb.Append("  and DateDiff(dd,T1.dt,getdate())=0 and T2.VALUE5 = 'Month'");
+                            sb.Append("  and DateDiff(MM,T1.dt,getdate())=0 and T2.VALUE5 = 'Month'");
                             break;
                         default:
                             sb.Append(" T1.did = ''");

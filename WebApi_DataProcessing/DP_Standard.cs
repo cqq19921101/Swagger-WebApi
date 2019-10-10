@@ -13,7 +13,7 @@ namespace WebApi_DataProcessing
     public abstract class DP_Standard
     {
 
-        static string conn = ConfigurationManager.AppSettings["DBConnection"];
+        static string conn = ConfigurationManager.AppSettings["DBConnection"]; //CZ
         static SqlDB sdb = new SqlDB(conn);
         static ArrayList opc = new ArrayList();
 
@@ -27,6 +27,7 @@ namespace WebApi_DataProcessing
 
 
         #endregion
+
 
         #region Public Function ------ GetTECO
 
@@ -71,8 +72,8 @@ namespace WebApi_DataProcessing
 
             string year = nowTime.Year.ToString();
             string[] procType = processtype.Split(',');
-            string month = "case when month='01' then '1' when month='02' then '2' when month='03' then '3' when month='04' then '4' " +
-            "when month='05' then '5' when month='06' then '6' when month='07' then '7' when month='08' then '8' when month='09' then '9' " +
+            string month = "case when month='01' then '1' when month='02' then '02' when month='03' then '03' when month='04' then '04' " +
+            "when month='05' then '05' when month='06' then '06' when month='07' then '07' when month='08' then '08' when month='09' then '09' " +
             "when month='10' then '10' when month='11' then '11' when month='12' then '12' else '#' end as month";
             StringBuilder head = new StringBuilder();
             head.Append("year,month,description");

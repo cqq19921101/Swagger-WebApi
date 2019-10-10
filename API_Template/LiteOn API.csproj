@@ -314,9 +314,11 @@
   <ItemGroup>
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ITtestController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\FactoryManagementController.cs" />
     <Compile Include="Model\BackupNotes.cs" />
+    <Compile Include="Model\ITtest.cs" />
     <Compile Include="Model\MESOPSCZ.cs" />
     <Compile Include="Controllers\MESOPSCZController.cs" />
     <Compile Include="Controllers\SmartWaterController.cs" />
@@ -367,6 +369,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WebApi_CacheHelper\WebApi_CacheHelper.csproj">
+      <Project>{692CF19D-5045-4809-ADB6-E8A1097EE3AF}</Project>
+      <Name>WebApi_CacheHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebApi_DataProcessing\WebApi_DataProcessing.csproj">
       <Project>{27538539-6E84-4F4F-8D55-4CADB3D7A812}</Project>
       <Name>WebApi_DataProcessing</Name>

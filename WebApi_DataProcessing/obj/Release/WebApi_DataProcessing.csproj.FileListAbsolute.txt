@@ -12,3 +12,5 @@ D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.EA.BLL.dll
 D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.EA.DAL.dll
 D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.EA.Model.dll
 D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\LiteOn.Corp.IT.EA.CMCC.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\WebApi_CacheHelper.dll
+D:\WORKSHOP\swagger-webapi\WebApi_DataProcessing\bin\Release\WebApi_CacheHelper.pdb

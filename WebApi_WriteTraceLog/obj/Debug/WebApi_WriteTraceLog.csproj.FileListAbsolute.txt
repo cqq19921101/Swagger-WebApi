@@ -4,4 +4,6 @@ D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\bin\Debug\WebApi_WriteTraceLog.p
 D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\bin\Debug\log4net.dll
 D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\obj\Debug\WebApi_WriteTraceLog.dll
 D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\obj\Debug\WebApi_WriteTraceLog.pdb
-D:\WORKSHOP\swagger-webapi\WebApi_WriteTraceLog\obj\Debug\WebApi_WriteTraceLog.csprojResolveAssemblyReference.cache
+D:\Workshop\Swagger-WebApi\WebApi_WriteTraceLog\obj\Debug\WebApi_WriteTraceLog.csprojAssemblyReference.cache
+D:\Workshop\Swagger-WebApi\WebApi_WriteTraceLog\obj\Debug\WebApi_WriteTraceLog.csproj.CoreCompileInputs.cache
+D:\Workshop\Swagger-WebApi\WebApi_WriteTraceLog\obj\Debug\WebApi_WriteTraceLog.csproj.CopyComplete

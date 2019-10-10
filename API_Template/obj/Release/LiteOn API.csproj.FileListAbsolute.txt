@@ -70,3 +70,5 @@ D:\WORKSHOP\swagger-webapi\API_Template\bin\log4net.dll
 D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_WriteTraceLog.dll
 D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_WriteTraceLog.pdb
 D:\WORKSHOP\swagger-webapi\API_Template\bin\log4net.xml
+D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_CacheHelper.dll
+D:\WORKSHOP\swagger-webapi\API_Template\bin\WebApi_CacheHelper.pdb

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WebApi_WriteTraceLog;
 using API_Template.Controllers;
+using WebApi_CacheHelper;
 
 namespace API.Model
 {
@@ -141,49 +142,59 @@ namespace API.Model
         /// <returns>Datatable 轉 Json</returns>
         public static string GetMeterKWH(SmartMeterKWH_Input Parameter)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(@" select T3.Line, T1.did, SUM(convert(int,T1.total)) as ActValue, Convert(int,T2.VALUE1) as TargetValue 
+            string Time = Cache_Helper.CheckIsExistByCache("SmartMeter", Parameter.functiontype, Parameter.did);
+            if (!string.IsNullOrEmpty(Time) && Cache_Helper.CalcTimeDifference(DateTime.Now,DateTime.Parse(Time)) < 60) //一小时更新数据
+            {
+                DataTable dt = Cache_Helper.GetAPICache("SmartMeter", Parameter.functiontype, Parameter.did);
+                DataRow dr = dt.Rows[0];
+                //string Update_Time = dr["Update_Time"].ToString();//缓存中的时间
+                string JsonResult = dr["Value3"].ToString();
+
+                return JsonResult;
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(@" select T3.Line, T1.did, SUM(convert(int,T1.total)) as ActValue, Convert(int,T2.VALUE1) as TargetValue 
                          from dbo.KWH T1, TB_APPLICATION_PARAM T2, dbo.TB_Line_Param T3
                          where  T1.type = 'R' 
                          and T2.PARAME_ITEM = 'upper'  ");
-            sb.Append(" AND T2.VALUE2 = @VALUE2 and T1.did = @did and T3.LineCode = @LineCode");
-            opc.Clear();
-            switch (Parameter.functiontype)
-            {
-                case "Day":
-                    sb.Append(" and DateDiff(dd,dt,getdate())=0 and T2.VALUE5 = 'Day'");
-                    break;
-                case "Month":
-                    sb.Append(" and DateDiff(MM,dt,getdate())=0 and T2.VALUE5 = 'Month'");
-                    break;
-                default:
-                    sb.Append(" T1.did = ''");
-                    break;
+                sb.Append(" AND T2.VALUE2 = @VALUE2 and T1.did = @did and T3.LineCode = @LineCode");
+                opc.Clear();
+                switch (Parameter.functiontype)
+                {
+                    case "Day":
+                        sb.Append(" and DateDiff(dd,dt,getdate())=0 and T2.VALUE5 = 'Day'");
+                        break;
+                    case "Month":
+                        sb.Append(" and DateDiff(MM,dt,getdate())=0 and T2.VALUE5 = 'Month'");
+                        break;
+                    default:
+                        sb.Append(" T1.did = ''");
+                        break;
+                }
+                sb.Append(" group by did, VALUE1, PARAME_NAME, Line");
+                switch (Parameter.did)
+                {
+                    //OSD車間 
+                    case "190160":
+                    case "190161":
+                    case "190174":
+                    case "190175":
+                        opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, "190160"));
+                        opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+                        opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, "190160"));
+                        break;
+                    default:
+                        opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, Parameter.did));
+                        opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
+                        opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, Parameter.did));
+                        break;
+                }
+                DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
+                Cache_Helper.InsertCacheData("SmartMeter", Parameter.functiontype, Parameter.did, JsonConvert.SerializeObject(dt), DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") );
+                return JsonConvert.SerializeObject(dt);
             }
-            sb.Append(" group by did, VALUE1, PARAME_NAME, Line");
-            switch (Parameter.did)
-            {
-                //OSD車間 
-                case "190160":
-                case "190161":
-                case "190174":
-                case "190175":
-                    opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, "190160"));
-                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-                    opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, "190160"));
-                    break;
-                default:
-                    opc.Add(DataPara.CreateDataParameter("@VALUE2", SqlDbType.NVarChar, Parameter.did));
-                    opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-                    opc.Add(DataPara.CreateDataParameter("@LineCode", SqlDbType.NVarChar, Parameter.did));
-                    break;
-            }
-            DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-            return JsonConvert.SerializeObject(dt);
-
-            //opc.Add(DataPara.CreateDataParameter("@did", SqlDbType.NVarChar, Parameter.did));
-            //DataTable dt = sdb.GetDataTable(sb.ToString(), opc);
-            //return JsonConvert.SerializeObject(dt);
 
         }
 

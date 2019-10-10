@@ -4,6 +4,13 @@
         <name>API_Template</name>
     </assembly>
     <members>
+        <member name="M:API_Template.Controllers.ITtestController.GetNSB(API.Model.GetNSB_Input)">
+            <summary>
+            GetNSB  ----------> 異步處理 
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
         <member name="M:API_Template.Controllers.LoginController.Post(LiteOn.WebAPI.Auth.LogonRequest)">
             <summary>
             驗證UserName、UserPassword、AppID
@@ -53,9 +60,25 @@
             <param name="para"></param>
             <returns></returns>
         </member>
+        <member name="M:API_Template.Controllers.MESOPSCZController.Cache_Add(System.String,System.Object,System.Int32,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="key">缓存key，全局唯一</param>
+            <param name="value">缓存值</param>
+            <param name="minutes">缓存时间(分钟)</param>
+            <param name="useAbsoluteExpiration">是否绝对过期</param>
+        </member>
         <member name="M:API_Template.Controllers.MESOPSCZController.GetOAY(API.Model.GetOAY_Input)">
             <summary>
-            QueryLvData
+            GetOAY
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:API_Template.Controllers.MESOPSCZController.GetQuality(API.Model.GetQuanlity_Input)">
+            <summary>
+            GetQuality
             </summary>
             <param name="item"></param>
             <returns></returns>
@@ -119,6 +142,18 @@
             </remarks>
             <returns></returns>
         </member>
+        <member name="T:API.Model.Test_Helper">
+            <summary>
+            GetNSB CRUD
+            </summary>
+        </member>
+        <member name="M:API.Model.Test_Helper.GetNSB(API.Model.GetNSB_Input)">
+            <summary>
+            GetNSB
+            </summary>
+            <param name="Parameter"></param>
+            <returns>Datatable 轉 Json</returns>
+        </member>
         <member name="T:API.Model.GETOAY_Helper">
             <summary>
             GetOAY
@@ -126,10 +161,15 @@
         </member>
         <member name="M:API.Model.GETOAY_Helper.GetOAY(API.Model.GetOAY_Input)">
             <summary>
-            GetNSB
+            GetOAY
             </summary>
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
+        </member>
+        <member name="T:API.Model.GetQuanlity_Helper">
+            <summary>
+            GetOAY
+            </summary>
         </member>
         <member name="T:API.Model.ReturnMessage">
             <summary>
@@ -168,7 +208,7 @@
             <param name="Parameter"></param>
             <returns>Datatable 轉 Json</returns>
         </member>
-        <member name="M:API.Model.GetHC_Helper.GetHC_DLBuffer(API.Model.GetHCDLBuffer_Input)">
+        <member name="M:API.Model.GetHC_Helper.GetHC_QueryDLBuffer(API.Model.GetHCDLBuffer_Input)">
             <summary>
             QueryDLBuffer
             </summary>
@@ -189,10 +229,10 @@
         </member>
         <member name="M:API.Model.GetNUB_Helper.GetNUB(API.Model.GetNUB_Input)">
             <summary>
-            異步處理 NUB資料
+            GetNUB
             </summary>
-            <param name="Para"></param>
-            <returns></returns>
+            <param name="Parameter"></param>
+            <returns>string 轉 Json</returns>
         </member>
         <member name="M:API.Model.TECO_Helper.GetTECO(API.Model.TECO_Input)">
             <summary>

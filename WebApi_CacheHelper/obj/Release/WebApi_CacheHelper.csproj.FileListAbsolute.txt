@@ -1,0 +1,6 @@
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Release\WebApi_CacheHelper.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Release\WebApi_CacheHelper.pdb
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Release\LiteOn.EA.DAL.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\bin\Release\LiteOn.Corp.IT.EA.CMCC.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\obj\Release\WebApi_CacheHelper.dll
+D:\WORKSHOP\swagger-webapi\WebApi_CacheHelper\obj\Release\WebApi_CacheHelper.pdb
