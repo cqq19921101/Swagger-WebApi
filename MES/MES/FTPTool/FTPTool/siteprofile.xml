@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SiteProfile>
+  <Connection>
+    <Name>PDCA FFA</Name>
+    <Site>17.239.169.36</Site>
+    <UserID>upload</UserID>
+    <Password>%%(L+,%&amp;</Password>
+  </Connection>
+  <Connection>
+    <Name>PDCA</Name>
+    <Site>17.239.169.36</Site>
+    <UserID>upload</UserID>
+    <Password></Password>
+  </Connection>
+  <Connection>
+    <Name>kimi</Name>
+    <Site>172.17.0.13</Site>
+    <UserID>kimi</UserID>
+    <Password>%%'H83DQq</Password>
+  </Connection>
+</SiteProfile>

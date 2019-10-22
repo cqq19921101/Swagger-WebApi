@@ -1,0 +1,4 @@
+[ERROR] 2018/07/24 13:54:04 This property cannot be set after writing has started.
+[ERROR] 2018/07/24 13:56:31 This property cannot be set after writing has started.
+[ERROR] 2018/07/24 17:52:29 The ConnectionString property has not been initialized.
+[ERROR] 2018/07/24 18:00:22 The ConnectionString property has not been initialized.

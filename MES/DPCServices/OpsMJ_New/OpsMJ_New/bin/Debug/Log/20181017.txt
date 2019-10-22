@@ -1,0 +1,2 @@
+[ERROR] 2018/10/17 08:29:56 An invalid character was found in the mail header: ';'.
+[ERROR] 2018/10/17 08:33:41 An invalid character was found in the mail header: ';'.

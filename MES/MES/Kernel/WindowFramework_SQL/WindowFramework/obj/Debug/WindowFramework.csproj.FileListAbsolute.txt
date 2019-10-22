@@ -1,0 +1,5 @@
+D:\SourceCode\学习\MES\Kernel\WindowFramework_SQL\WindowFramework\bin\Debug\WindowFramework.exe.config
+D:\SourceCode\学习\MES\Kernel\WindowFramework_SQL\WindowFramework\obj\Debug\WindowFramework.csprojResolveAssemblyReference.cache
+D:\SourceCode\学习\MES\Kernel\WindowFramework_SQL\WindowFramework\obj\Debug\WindowFramework.frmMain.resources
+D:\SourceCode\学习\MES\Kernel\WindowFramework_SQL\WindowFramework\obj\Debug\WindowFramework.Properties.Resources.resources
+D:\SourceCode\学习\MES\Kernel\WindowFramework_SQL\WindowFramework\obj\Debug\WindowFramework.csproj.GenerateResource.Cache

@@ -1,0 +1,7 @@
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\obj\Debug\WebUtility.csprojResolveAssemblyReference.cache
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\bin\Debug\Liteon.Mes.WebUtility.dll
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\bin\Debug\Liteon.Mes.WebUtility.pdb
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\bin\Debug\Newtonsoft.Json.dll
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\bin\Debug\Newtonsoft.Json.xml
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\obj\Debug\Liteon.Mes.WebUtility.dll
+D:\SourceCode\学习\MES\Kernel\WebUtility\WebUtility\obj\Debug\Liteon.Mes.WebUtility.pdb

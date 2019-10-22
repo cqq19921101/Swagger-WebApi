@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPTool", "FTPTool\FTPTool.csproj", "{A9A5393A-C645-4C12-AA60-D8FB458646FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionBLL", "ActionBLL\ActionBLL.csproj", "{B84804B0-3A05-4A98-BCE7-CD4A8653BC5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTP", "FTP\FTP.csproj", "{184E7193-0686-4ADE-BB10-325D9FD3435D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFTP", "SFTP\SFTP.csproj", "{36131A62-4D69-4CC2-A86A-E51EC9B8FB47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPClass", "FTPClass\FTPClass.csproj", "{50317C06-5708-468A-8E4C-930035D6DBA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9A5393A-C645-4C12-AA60-D8FB458646FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9A5393A-C645-4C12-AA60-D8FB458646FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9A5393A-C645-4C12-AA60-D8FB458646FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9A5393A-C645-4C12-AA60-D8FB458646FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B84804B0-3A05-4A98-BCE7-CD4A8653BC5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B84804B0-3A05-4A98-BCE7-CD4A8653BC5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B84804B0-3A05-4A98-BCE7-CD4A8653BC5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B84804B0-3A05-4A98-BCE7-CD4A8653BC5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184E7193-0686-4ADE-BB10-325D9FD3435D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184E7193-0686-4ADE-BB10-325D9FD3435D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184E7193-0686-4ADE-BB10-325D9FD3435D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184E7193-0686-4ADE-BB10-325D9FD3435D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36131A62-4D69-4CC2-A86A-E51EC9B8FB47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36131A62-4D69-4CC2-A86A-E51EC9B8FB47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36131A62-4D69-4CC2-A86A-E51EC9B8FB47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36131A62-4D69-4CC2-A86A-E51EC9B8FB47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50317C06-5708-468A-8E4C-930035D6DBA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50317C06-5708-468A-8E4C-930035D6DBA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50317C06-5708-468A-8E4C-930035D6DBA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50317C06-5708-468A-8E4C-930035D6DBA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 6
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs651:8080/tfs/mes_cs_collection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ActionBLL\\ActionBLL.csproj
+		SccProjectName1 = ActionBLL
+		SccLocalPath1 = ActionBLL
+		SccProjectUniqueName2 = FTP\\FTP.csproj
+		SccProjectName2 = FTP
+		SccLocalPath2 = FTP
+		SccProjectUniqueName3 = FTPClass\\FTPClass.csproj
+		SccProjectName3 = FTPClass
+		SccLocalPath3 = FTPClass
+		SccProjectUniqueName4 = FTPTool\\FTPTool.csproj
+		SccProjectName4 = FTPTool
+		SccLocalPath4 = FTPTool
+		SccProjectUniqueName5 = SFTP\\SFTP.csproj
+		SccProjectName5 = SFTP
+		SccLocalPath5 = SFTP
+	EndGlobalSection
+EndGlobal
