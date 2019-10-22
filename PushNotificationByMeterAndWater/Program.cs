@@ -91,8 +91,8 @@ namespace PushNotificationByMeterAndWater
 
 
             WebProxy proxy = new WebProxy();                                      //定義一個網關對象
-            proxy.Address = new Uri("http://pxy655.liteon.com:3128");              //網關服務器:端口
-            proxy.Credentials = new NetworkCredential("CORPCZLogistic", "11111111");      //用戶名,密碼
+            proxy.Address = new Uri("**");              //網關服務器:端口
+            proxy.Credentials = new NetworkCredential("**", "**");      //用戶名,密碼
             request.UseDefaultCredentials = true;                                      //啟用網關認証
             request.Proxy = proxy;                                                      //設置網關
 
@@ -132,7 +132,7 @@ namespace PushNotificationByMeterAndWater
         /// </summary>
         public static string GetToken()
         {
-            string url = "https://factory.iccapp.info/api/Authenticate";//正式区
+            string url = "**";//正式区
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(new Uri(url));
             request.Timeout = 30 * 1000;//设置30s的超时
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36";
@@ -140,16 +140,16 @@ namespace PushNotificationByMeterAndWater
             request.Method = "POST";
 
             WebProxy proxy = new WebProxy();                                      //定義一個網關對象
-            proxy.Address = new Uri("http://pxy655.liteon.com:3128");              //網關服務器:端口
-            proxy.Credentials = new NetworkCredential("CORPCZLogistic", "11111111");      //用戶名,密碼
+            proxy.Address = new Uri("**");              //網關服務器:端口
+            proxy.Credentials = new NetworkCredential("**", "**");//用戶名,密碼
             request.UseDefaultCredentials = true;                                      //啟用網關認証
             request.Proxy = proxy;                                                      //設置網關
 
             var Parameter = new
             {
                 command = "Authenticate",
-                account = "it@iccapp.info",
-                password = "liteon168"
+                account = "it@**.info",
+                password = "**"
             };
 
             var postData = JsonHelper.ObjectToString(Parameter);
